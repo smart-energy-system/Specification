@@ -17,8 +17,8 @@ Class=LaTeXView
 Document=ExXX_LastnameOfMembers.tex
 
 [Frame0_View0,0]
-TopLine=45
-Cursor=2758
+TopLine=0
+Cursor=577
 
 [Frame1]
 Flags=0
@@ -38,7 +38,43 @@ Document=UserStories.tex
 TopLine=46
 Cursor=3771
 
+[Frame2]
+Flags=0
+ShowCmd=1
+MinPos.x=-1
+MinPos.y=-1
+MaxPos.x=-1
+MaxPos.y=-1
+NormalPos.left=4
+NormalPos.top=26
+NormalPos.right=1362
+NormalPos.bottom=414
+Class=LaTeXView
+Document=Architecture.tex
+
+[Frame2_View0,0]
+TopLine=17
+Cursor=2440
+
+[Frame3]
+Flags=0
+ShowCmd=1
+MinPos.x=-1
+MinPos.y=-1
+MaxPos.x=-1
+MaxPos.y=-1
+NormalPos.left=4
+NormalPos.top=26
+NormalPos.right=1362
+NormalPos.bottom=414
+Class=LaTeXView
+Document=A2.tex
+
+[Frame3_View0,0]
+TopLine=0
+Cursor=2732
+
 [SessionInfo]
-FrameCount=2
+FrameCount=4
 ActiveFrame=0
 
