@@ -17,8 +17,8 @@ Class=LaTeXView
 Document=ExXX_LastnameOfMembers.tex
 
 [Frame0_View0,0]
-TopLine=285
-Cursor=14105
+TopLine=37
+Cursor=728
 
 [SessionInfo]
 FrameCount=1
