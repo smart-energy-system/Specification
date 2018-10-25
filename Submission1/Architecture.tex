@@ -1,0 +1,10 @@
+The weather component is the component responsible for looking up weather data for registered supply and demand components.
+The component reads registration data from the database and looks up weather data for each recorded entry.
+The collected data is written back into the database in order to be usable for the rest of the system.
+
+In order for the whole system to be reliable and responsive we devided the weather component from the rest of the system.
+The weather component speaks only to the weather database where it get the locations for which it should collect weather data.
+The collected data gets written into the database and stored.
+Even in the case of a failure of the weather component the already collected data is still accessible and therefore the system can still access it, making the system independent of the weather component.
+In the case of a new registration of a component during a weather component failure, the database may return default values for the new component in a way the running system is not being halted by missing data.
+These measures should make the system reliable and and responsive in that context.
