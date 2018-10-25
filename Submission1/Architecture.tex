@@ -15,8 +15,8 @@ It speaks only to the weather database where it get the locations for which it s
 The collected data gets written into the database and stored.
 Even in the case of a failure of the weather component or OpenWeather the already collected data is still accessible and therefore the system can work with it, making the system independent of the weather component.
 In the case of a new registration of a supplier component during a weather component failure, the database may return default values for the new component in a way the running system is not being halted by missing data.
-These measures should make the system reliable and and responsive in that context.\\
-\\
+These measures should make the system reliable and and responsive in that context.
+
 The three-layered architecture was already planned for in the first conceptions of the project, therefore no extra steps had to be taken.
 We divided the project in subcomponents and put them in the respective part of the architecture.\\
 The first layer is the data layer which only consists of data-providing hardware and databases. 
