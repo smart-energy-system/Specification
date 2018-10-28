@@ -19,3 +19,10 @@ The wind turbine model contains some variables which can be set by the user. The
 The general equation for this setup is: $P_avail = (1/2) * p * A * v^{3} * C$
 where p is the air pressure, A the area swept, v the windspeed and C the power coefficient.\\
 Source: https://www.raeng.org.uk/publications/other/23-wind-turbine
+\subsection{Photovoltaic}
+\subsubsection{Temperature loss}
+The function for the temperature loss is giving a linear function for the percentage loss of energy depending on the degrees over 25 degree Celsius. We made the assumption the efficiency does not go over 100 \% even for temperatures below 25 degree Celsius.The resulting equation is as follows: $L_t = min((T-25)*-0.005 , 0)$
+\subsubsection{Performance Ratio}
+The performance ration is computed with the equation $1.0 - (total percentage of losses)$.
+With the previous computed losses for temperature and the constant loss $L_0$ of 0.14 we get the equation $R = 1.0 - (L_0 + L_t) = 1.0 - (0.14 + L_t)$
+\subsubsection{Solar irradiance}
