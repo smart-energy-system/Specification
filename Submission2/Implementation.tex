@@ -1,0 +1,21 @@
+\subsection{Geather weather design}
+
+\subsection{Windturbine}
+\subsubsection{Swept area function}
+The swept area of a windturbine is dependent on the radius of the rotary blades. Combined with the constant Pi the area swept can be computed by the equation: $A = r^{2}* \Pi $
+\subsubsection{Vapor pressure}
+To compute the actual vapor pressure in the air the relative humidity has to be given. The relative humidity is computable with the equation $H = P_av / P_s$ with $P_av$ being the actual vapor pressure and $P_s$ being the saturated vapor pressure at a given temperature. This equation can be restructured to get the actual vapor pressure: $P_av  = H * P_s$. The relative humidity is a parameter for the function, which is filled with data form the before mentioned weather data collection.\\
+\\
+To be able to now compute the actual vapor pressure at a given temperature we still need the saturated vapor pressure. For this we can use the Herman Wobus equation (E being the vapor pressure):\\
+$E = e/p$ with\\
+e = 6.1078 and\\
+$p = c_0 + T * (c_1 + T * (c_2 + T * (c_3 + T * (c_4 + T *(c_5 + T * (c_6 + T * (c_7 + T * c_8 + T * c_9)))))))$\\
+with $c_0$ to $c_9$ being constants and T being the Temperature in degrees Celsius.
+\subsubsection{Density of moist air}
+In order to compute the density of moist air, we have to have a look at how it is compounded. Moist air density is a mixture of dry air and water vapor. The physical equation for this is: $D_m = (P_d/(R_d * T_k))+(P_v/(R_v*T_k))$\\
+$D_m$ is the density of moist air, $P_d$ is the pressure of dry air at the specified temperature, $R_d$ is the gas constant for dry air, $P_v$ is the pressure of water vapor at the specified temperature, $R_v$ is the gas constant for water vapor and $T_k$ is the given temperature in degrees Kelvin. With the previously implemented methods this equation system is able to compute the air density with only the temperature and relative humidity given.
+\subsubsection{Wind turbine model}
+The wind turbine model contains some variables which can be set by the user. The function for computing the generated energy is derived from the power coefficient of the turbine (basically the efficiency), the size of the turbine (shows in area swept), the density of the air in the area and of course the weather conditions which apply at the moment given.
+The general equation for this setup is: $P_avail = (1/2) * p * A * v^{3} * C$
+where p is the air pressure, A the area swept, v the windspeed and C the power coefficient.\\
+Source: https://www.raeng.org.uk/publications/other/23-wind-turbine
