@@ -17,8 +17,8 @@ Class=LaTeXView
 Document=ExXX_LastnameOfMembers.tex
 
 [Frame0_View0,0]
-TopLine=0
-Cursor=391
+TopLine=48
+Cursor=546
 
 [Frame1]
 Flags=0
@@ -35,8 +35,8 @@ Class=LaTeXView
 Document=Implementation.tex
 
 [Frame1_View0,0]
-TopLine=22
-Cursor=662
+TopLine=0
+Cursor=65
 
 [SessionInfo]
 FrameCount=2
