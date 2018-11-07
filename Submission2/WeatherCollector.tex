@@ -1,6 +1,82 @@
+\subsubsection{Weather service}\label{sec:weatherservice}
 For our smart energy system we need a weather service which can provide all needed data on a hourly basis.
 There is one weather service which fullfills our needs more than appropriate.
 The weather service \url{weatherbit.io} has different kinds of endpoints on its API.
 In our case we use two of them, the current weather data API and the 48 hours weather forecast API.
 
 Before we take a look at the endpoints provided to the user and their responses, we want to present the data collectable on weatherbit.io.
+An example response of the current weather API is shown in listing \ref{lst:weatherdata}.
+The property  \texttt{data} of the JSON object contains an array of weather data points.
+For current weather API there is only one object in the array.
+But for the forecast there are up to 48 objects, one for every hour of the forecast.
+\begin{lstlisting}[caption={Example response of weatherbit.io for $lat=31.23$ and $lon=121.47$}, label={lst:weatherdata}, frame=single, language=json]
+ {
+    "data": [
+        {
+            "wind_cdir": "SSE",
+            "rh": 100,
+            "pod": "n",
+            "lon": 121.47,
+            "pres": 1012.2,
+            "timezone": "Asia/Shanghai",
+            "ob_time": "2018-11-07 20:35",
+            "country_code": "CN",
+            "clouds": 0,
+            "vis": 10,
+            "solar_rad": 0,
+            "state_code": "23",
+            "wind_spd": 0.89,
+            "lat": 31.23,
+            "wind_cdir_full": "south-southeast",
+            "slp": 1013.2,
+            "datetime": "2018-11-07:20",
+            "ts": 1541622900,
+            "station": "E7205",
+            "h_angle": -90,
+            "dewpt": 13.9,
+            "uv": 0,
+            "dni": 0,
+            "wind_dir": 156,
+            "elev_angle": -29.2797,
+            "ghi": 0,
+            "dhi": 0,
+            "precip": null,
+            "city_name": "Shanghai",
+            "weather": {
+                "icon": "c01n",
+                "code": "800",
+                "description": "Clear sky"
+            },
+            "sunset": "09:00",
+            "temp": 13.9,
+            "sunrise": "22:14",
+            "app_temp": 13.9
+        }
+    ],
+    "count": 1
+}
+\end{lstlisting}
+From all those data we chose only to store \texttt{lat} for latitute, \texttt{lon} for longitute, \texttt{pres} for air pressure, \texttt{rh} for relative humidity, \texttt{solar\_rad} for solar radiation, \texttt{wind\_spd} for wind speed, \texttt{temp} for the temperature, and the timestamp in UTC format.
+
+The API for the current weather data returns current weather data of over 45.000 stations.
+Every API request will return the nearest, and most recent observation.
+There are several endpoints available in the API.
+For example a user can get current weather observation by lat/lon as we do or by city name.
+All endpoints differ only on their required query parameters.
+They define whether to get the observation by lat/lon, city name or any other possible way.
+The basepath for all endpoints is \texttt{https://api.weatherbit.io/v2.0/current} and the supported method is \texttt{GET}.
+To get the data in metric format you have to add an additional query parameter \texttt{unit=m}.
+Every request must provide an API key in query parameters.\cite{weatherbit}
+This API key can be requested through creating an account on weatherbit.io.
+After creating an account a user have to choose a pricing plan.
+For our system the free plan is totally sufficient.
+
+The API for the weather forecast data returns the weather forecast for up to 48 hours on hourly basis.
+Nevertheless, we only request it for 24 hours.
+While the basepath is now \texttt{https://api.weatherbit.io/v2.0/forecast/hourly}, the provided query parameter are the same with an additional query parameter \texttt{hours} which must get a value between 0 and 48 to specify the size of the forecast.
+
+\subsubsection{Implementation of our WeatherCollector service}\label{sec:weathercollector}
+
+
+
+
