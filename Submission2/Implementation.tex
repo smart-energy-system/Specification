@@ -34,3 +34,18 @@ The computation of the SolarRadiationIncident and therefore the effective Solarr
 $\alpha$ is the effective tilt of solarradiation on a specified latitude and set as 90 - Latitude of the object + $\delta$.
 $\delta$ is the tilt of the solarradiation in regard of the day of the year d and can be computed with the following equation: $23.45 * sin((360/365) * (284 + d))$
 Source: https://pveducation.org/pvcdrom/properties-of-sunlight/solar-radiation-on-a-tilted-surface
+\subsubsection{Photovoltaic Model}
+The formula for computing the generated energy as given in the slides is: $E = A * r * PR * S$\\
+A is the area of the solarpanel and is given by the user in $m^{2}$.
+Same goes for the solar panel yield r which is given by the user as well.
+The performance ratio PR  is computed in on of the previous steps and is  a percentage.
+S is the solar radiation incident and is computed in regards of solar radiation and other factors taken from the database.
+The measurement unit for S is $W/m^{2]$.
+The resulting unit for produced energy is therefore W.
+\subsubsection{Battery Model}
+The first function for returning the current state of the battery is a simple return of the currently stored energy.
+The formula for charging and discharging is more complex and takes several parameters.
+The parameters are charging and discharging rate as well as charging efficiency.
+The function returns the actual change of energy stored in the battery.
+The returned value is positive if the battery is charged and negative if the battery is discharged.
+\subsubsection{Demand Profile}
