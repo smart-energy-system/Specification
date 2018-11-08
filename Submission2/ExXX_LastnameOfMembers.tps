@@ -53,8 +53,8 @@ Class=LaTeXView
 Document=WeatherCollector.tex
 
 [Frame2_View0,0]
-TopLine=137
-Cursor=8612
+TopLine=46
+Cursor=2529
 
 [Frame3]
 Flags=0
