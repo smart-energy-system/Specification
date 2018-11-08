@@ -1,0 +1,51 @@
+\subsection{Geather weather design}
+
+\subsection{Windturbine}
+\subsubsection{Swept area function}
+The swept area of a windturbine is dependent on the radius of the rotary blades. Combined with the constant Pi the area swept can be computed by the equation: $A = r^{2}* \Pi $\\
+Source: $Beckmann, Petr (1976), A History of Pi, St. Martin's Griffin, ISBN 978-0-312-38185-1$
+\subsubsection{Vapor pressure}
+To compute the actual vapor pressure in the air the relative humidity has to be given. The relative humidity is computable with the equation $H = P_{av} / P_s$ with $P_{av}$ being the actual vapor pressure and $P_s$ being the saturated vapor pressure at a given temperature. This equation can be restructured to get the actual vapor pressure: $P_{av}  = H * P_s$. The relative humidity is a parameter for the function, which is filled with data form the before mentioned weather data collection.\\
+\\
+To be able to now compute the actual vapor pressure at a given temperature we still need the saturated vapor pressure. For this we can use the Herman Wobus equation (E being the vapor pressure):\\
+$E = e/p^{8}$ with\\
+e = 6.1078 and\\
+$p = c_0 + T * (c_1 + T * (c_2 + T * (c_3 + T * (c_4 + T *(c_5 + T * (c_6 + T * (c_7 + T * c_8 + T * c_9)))))))$\\
+with $c_0$ to $c_9$ being constants and T being the temperature in degrees Celsius.\\
+Source: $http://www.emd.dk/files/windpro/WindPRO_AirDensity.pdf$
+\subsubsection{Density of moist air}
+In order to compute the density of moist air, we have to have a look at how it is compounded. Moist air density is a mixture of dry air and water vapor. The physical equation for this is: $D_m = (P_d/(R_d * T_k))+(P_v/(R_v*T_k))$\\
+$D_m$ is the density of moist air, $P_d$ is the pressure of dry air at the specified temperature, $R_d$ is the gas constant for dry air, $P_v$ is the pressure of water vapor at the specified temperature, $R_v$ is the gas constant for water vapor and $T_k$ is the given temperature in degrees Kelvin. With the previously implemented methods this equation system is able to compute the air density with only the temperature and relative humidity given.\\
+Source: $Shelquist, R (2009) Equations - Air Density and Density Altitude$\\
+Source: $http://www.emd.dk/files/windpro/WindPRO_AirDensity.pdf$
+\subsubsection{Wind turbine model}
+The wind turbine model contains some variables which can be set by the user. The function for computing the generated energy is derived from the power coefficient of the turbine (basically the efficiency), the size of the turbine (shows in area swept), the density of the air in the area and of course the weather conditions which apply at the moment given.
+The general equation for this setup is: $P_{avail} = (1/2) * p * A * v^{3} * C$
+where p is the air pressure, A the area swept, v the windspeed and C the power coefficient.\\
+Source: $https://www.raeng.org.uk/publications/other/23-wind-turbine$
+\subsection{Photovoltaic}
+\subsubsection{Temperature loss}
+The function for the temperature loss is giving a linear function for the percentage loss of energy depending on the degrees over 25 degree Celsius. We made the assumption the efficiency does not go over 100 \% even for temperatures below 25 degree Celsius.The resulting equation is as follows: $L_t = max((T-25)*0.005 , 0)$ with the result being the percentage of energy lost due to temperature as a point number.
+\subsubsection{Performance Ratio}
+The performance ration is computed with the equation $1.0 - (\text{total percentage of losses})$.
+With the previous computed losses for temperature and the constant loss $L_0$ of 0.14 we get the equation $R = 1.0 - (L_0 + L_t) = 1.0 - (0.14 + L_t)$
+\subsubsection{Solar irradiance}
+The computation of the SolarRadiationIncident and therefore the effective Solarradiation on the surface of the solarpanel can be computed with the equation $(SP_{horizontal} * sin(\alpha + \delta))/sin(\alpha)$.
+$\alpha$ is the effective tilt of solarradiation on a specified latitude and set as 90 - Latitude of the object + $\delta$.
+$\delta$ is the tilt of the solarradiation in regard of the day of the year d and can be computed with the following equation: $23.45 * sin((360/365) * (284 + d))$
+Source: https://pveducation.org/pvcdrom/properties-of-sunlight/solar-radiation-on-a-tilted-surface
+\subsubsection{Photovoltaic Model}
+The formula for computing the generated energy as given in the slides is: $E = A * r * PR * S$\\
+A is the area of the solarpanel and is given by the user in $m^{2}$.
+Same goes for the solar panel yield r which is given by the user as well.
+The performance ratio PR  is computed in on of the previous steps and is  a percentage.
+S is the solar radiation incident and is computed in regards of solar radiation and other factors taken from the database.
+The measurement unit for S is $W/m^{2]$.
+The resulting unit for produced energy is therefore W.
+\subsubsection{Battery Model}
+The first function for returning the current state of the battery is a simple return of the currently stored energy.
+The formula for charging and discharging is more complex and takes several parameters.
+The parameters are charging and discharging rate as well as charging efficiency.
+The function returns the actual change of energy stored in the battery.
+The returned value is positive if the battery is charged and negative if the battery is discharged.
+\subsubsection{Demand Profile}
