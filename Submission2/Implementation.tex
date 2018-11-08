@@ -31,9 +31,10 @@ The function for the temperature loss is giving a linear function for the percen
 The performance ration is computed with the equation $1.0 - (\text{total percentage of losses})$.
 With the previous computed losses for temperature and the constant loss $L_0$ of 0.14 we get the equation $R = 1.0 - (L_0 + L_t) = 1.0 - (0.14 + L_t)$
 \subsubsection{Solar irradiance}
-The computation of the SolarRadiationIncident and therefore the effective Solarradiation on the surface of the solarpanel can be computed with the equation $(SP_{horizontal} * sin(\alpha + \delta))/sin(\alpha)$.
+The computation of the SolarRadiationIncident and therefore the effective Solarradiation on the surface of the solarpanel can be computed with the equation $(SP_{horizontal} * sin(\alpha + \beta))/sin(\alpha)$.
 $\alpha$ is the effective tilt of solarradiation on a specified latitude and set as 90 - Latitude of the object + $\delta$.
-$\delta$ is the tilt of the solarradiation in regard of the day of the year d and can be computed with the following equation: $23.45 * sin((360/365) * (284 + d))$
+$\delta$ is the tilt of the solarradiation in regard of the day of the year d and can be computed with the following equation: $23.45 * sin((360/365) * (284 + d))$.
+The tilt of the soalrpanel itself is used as $\beta$.
 Source: https://pveducation.org/pvcdrom/properties-of-sunlight/solar-radiation-on-a-tilted-surface
 \subsubsection{Photovoltaic Model}
 The formula for computing the generated energy as given in the slides is: $E = A * r * PR * S$\\
