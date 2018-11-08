@@ -1,11 +1,13 @@
-\subsection{Gather weather design}
+The current implementation consists of two independent parts. The weather collector component which is described in \cref{subsec:weather} is developed with  NodeJS express. The main component which handles all the simulation and calculations is written in Java and uses the Spring Boot framework. The theoretical foundation of this component is described in \cref{subsec:Windturbine} and the following. Both components are linked through a shared database.
+
+\subsection{Gather weather design}\label{subsec:weather}
 \input{./WeatherCollector.tex}
 
-\subsection{Windturbine}
+\subsection{Windturbine}\label{subsec:Windturbine}
 \subsubsection{Swept area function}
 The swept area of a windturbine is dependent on the radius of the rotary blades. Combined with the constant Pi the area swept can be computed by the equation\cite{Beckmann}: $A = r^{2}* \Pi  $
 \subsubsection{Vapor pressure}
-To compute the actual vapor pressure in the air the relative humidity has to be given. The relative humidity is computable with the equation $H = P_{av} / P_s$ with $P_{av}$ being the actual vapor pressure and $P_s$ being the saturated vapor pressure at a given temperature. This equation can be restructured to get the actual vapor pressure: $P_{av}  = H * P_s$. The relative humidity is a parameter for the function, which is filled with data form the before mentioned weather data collection.\\
+To compute the actual vapor pressure in the air the relative humidity has to be given. The relative humidity is computable with the equation $H = P_{av} / P_s$ with $P_{av}$ being the actual vapor pressure and $P_s$ being the saturated vapor pressure at a given temperature. This equation can be restructured to get the actual vapor pressure: $P_{av}  = H * P_s$. The relative humidity is a parameter for the function, which is filled with data from the before mentioned weather data collection.\\
 \\
 To be able to now compute the actual vapor pressure at a given temperature we still need the saturated vapor pressure. For this we can use the Herman Wobus equation (E being the vapor pressure):\\
 $E = e/p^{8}$ with\\
@@ -21,7 +23,7 @@ The general equation for this setup is: $P_{avail} = (1/2) * p * A * v^{3} * C$
 where p is the air pressure, A the area swept, v the windspeed and C the power coefficient.\cite{WindPowerCalcs}
 \subsection{Photovoltaic}
 \subsubsection{Temperature loss}
-The function for the temperature loss is giving a linear function for the percentage loss of energy depending on the degrees over 25 degree Celsius. We made the assumption the efficiency does not go over 100 \% even for temperatures below 25 degree Celsius.The resulting equation is as follows: $L_t = max((T-25)*0.005 , 0)$ with the result being the percentage of energy lost due to temperature as a point number.
+The function for the temperature loss is giving a linear function for the percentage loss of energy depending on the degrees over 25 degree Celsius. We made the assumption that the efficiency does not go over 100 \% even for temperatures below 25 degree Celsius.The resulting equation is as follows: $L_t = max((T-25)*0.005 , 0)$ with the result being the percentage of energy lost due to temperature as a point number.
 \subsubsection{Performance Ratio}
 The performance ration is computed with the equation $1.0 - (\text{total percentage of losses})$.
 With the previous computed losses for temperature and the constant loss $L_0$ of 0.14 we get the equation $R = 1.0 - (L_0 + L_t) = 1.0 - (0.14 + L_t)$
@@ -44,4 +46,4 @@ The formula for charging and discharging is more complex and takes several param
 The parameters are charging and discharging rate as well as charging efficiency.
 The function returns the actual change of energy stored in the battery.
 The returned value is positive if the battery is charged and negative if the battery is discharged.
-\subsubsection{Demand Profile}
+\subsubsection{Demand Profile}\label{subsec:Demand}
