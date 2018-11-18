@@ -1,0 +1,19 @@
+\subsection{Balance within the microgrid}
+To guarantee the balance in the microgrid as defined in the slides we have to formulate a mathematical equation to use as a constraint.
+We came up with the following equation:\\
+$\forall t \in T: \sum_{s \in S}{s_{prod}(t)} + \sum_{b \in B}{b_{prod}(t)} + G_{prod}(t) = \sum_{d \in D}{d_{demand}(t)} = \sum_{b \in B}{b_{demand}(t)} + G_{demand}(t)$\\
+As one can see, for all time steps t in the set of all time steps T the equation has to hold true.
+This is the constraint for the whole microgrid.
+The equation itself is compartmentalized into different factors.
+On the supply side we have the sum the produced energy in time step t of all suppliers of the system, regardless of wind or solar energy.
+We get those values from our model given data for the time step and weather conditions.
+The second part is the energy provided by all batteries at a given time step.
+The connection to the main grid is resolved in the third part of the supply side of the equation.
+It gives the energy provided by the main grid at a given time step t.\\
+For the demand side we chose a similar  approach.
+We split the equation into several smaller parts.
+The first one is the sum over all energy demand of all  demander at a given time step.
+The second one is the again the part for the batteries.
+Here we calculate the energy demand of all batteries at given time step.
+In the last part we again have the connection to the main grid.
+Here we add the energy we provide to the main grid, in other words what the main grid can demand, at a given time step.\\<

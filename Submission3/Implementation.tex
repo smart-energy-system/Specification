@@ -1,0 +1,65 @@
+The current implementation consists of two independent parts. The weather collector component which is described in \cref{subsec:weather} is developed with  NodeJS express. The main component which handles all the simulation and calculations is written in Java and uses the Spring Boot framework. The theoretical foundation of this component is described in \cref{subsec:Windturbine} and the following. Both components are linked through a shared database.
+
+\subsection{Gather weather design}\label{subsec:weather}
+\input{./WeatherCollector.tex}
+
+\subsection{Windturbine}\label{subsec:Windturbine}
+\subsubsection{Swept area function}
+The swept area of a wind turbine is dependent on the radius of the rotary blades. Combined with the constant Pi the area swept can be computed by the equation\cite{Beckmann}: $A = r^{2}* \Pi  $
+\subsubsection{Vapor pressure}
+To compute the actual vapor pressure in the air the relative humidity has to be given. The relative humidity is computable with the equation $H = P_{av} / P_s$ with $P_{av}$ being the actual vapor pressure and $P_s$ being the saturated vapor pressure at a given temperature. This equation can be restructured to get the actual vapor pressure: $P_{av}  = H * P_s$. The relative humidity is a parameter for the function, which is filled with data from the before mentioned weather data collection.\\
+\\
+To be able to now compute the actual vapor pressure at a given temperature we still need the saturated vapor pressure. For this we can use the Herman Wobus equation (E being the vapor pressure):\\
+$E = e/p^{8}$ with\\
+e = 6.1078 and\\
+$p = c_0 + T * (c_1 + T * (c_2 + T * (c_3 + T * (c_4 + T *(c_5 + T * (c_6 + T * (c_7 + T * c_8 + T * c_9)))))))$\\
+with $c_0$ to $c_9$ being constants and T being the temperature in degrees Celsius.\cite{AirDensity,NOAA}
+\subsubsection{Density of moist air}
+In order to compute the density of moist air, we have to have a look at how it is compounded. Moist air density is a mixture of dry air and water vapor. The physical equation for this is: $D_m = (P_d/(R_d * T_k))+(P_v/(R_v*T_k))$\\
+$D_m$ is the density of moist air, $P_d$ is the pressure of dry air at the specified temperature, $R_d$ is the gas constant for dry air, $P_v$ is the pressure of water vapor at the specified temperature, $R_v$ is the gas constant for water vapor and $T_k$ is the given temperature in degrees Kelvin. With the previously implemented methods this equation system is able to compute the air density with only the temperature and relative humidity given.\cite{AirDensity,Shelquist}
+\subsubsection{Wind turbine model}
+The wind turbine model contains some variables which can be set by the user. The function for computing the generated energy is derived from the power coefficient of the turbine (basically the efficiency), the size of the turbine (shows in area swept), the density of the air in the area and of course the weather conditions which apply at the moment given.
+The general equation for this setup is: $P_{avail} = (1/2) * p * A * v^{3} * C$
+where p is the air pressure, A the area swept, v the windspeed and C the power coefficient. \cite{WindPowerCalcs}
+\subsection{Photovoltaic}
+\subsubsection{Temperature loss}
+The function for the temperature loss is giving a linear function for the percentage loss of energy depending on the degrees over 25 degree Celsius. We made the assumption that the efficiency does not go over 100 \% even for temperatures below 25 degree Celsius.The resulting equation is as follows: $L_t = max((T-25)*0.005 , 0)$ with the result being the percentage of energy lost due to temperature as a point number.
+\subsubsection{Performance ratio}
+The performance ratio is sum of all losses.
+With the previous computed losses for temperature and the constant loss $L_0$ of 0.14 we get the equation $R = (L_0 + L_t) = 1.0 - (0.14 + L_t)$. To use  the result in our calculation we have to subtract the result form 1.
+\subsubsection{Solar irradiance}
+The computation of the solar radiation incident and therefore the effective solar radiation on the surface of the solar panel can be computed with the equation $(SP_{horizontal} * sin(\alpha + \beta))/sin(\alpha)$.
+$\alpha$ is the effective tilt of solar radiation on a specified latitude and set as $90 - latitude$ of the position from the solar panel + $\delta$.
+$\delta$ is the tilt of the solar radiation in regard of the day of the year d and can be computed with the following equation: $23.45 * sin((360/365) * (284 + d))$. $(SP_{horizontal}$ is the horizontal solar radiation. Our weather service provides us with this information.
+The tilt of the solar panel  itself is used as $\beta$. \cite{SolarRadiation}
+\subsubsection{Photovoltaic model}
+The formula for computing the generated energy as given in the slides is: $E = A * r * PR * S$\\
+A is the area of the solar panel and is given by the user in $m^{2}$.
+Same goes for the solar panel yield r which is given by the user via the maximum power yield as well.
+The performance ratio PR  is computed in on of the previous steps and is  a percentage.
+S is the solar radiation incident and is computed in regards of solar radiation and other factors taken from the database.
+The measurement unit for S is $W/m^{2}$.
+The resulting unit for produced energy is therefore W.
+\subsubsection{Battery model}
+The first function for returning the current state of the battery is a simple return of the currently stored energy.
+The formula for charging and discharging is more complex and takes several parameters.
+The parameters are charging and discharging rate as well as charging efficiency.
+The function returns the actual change of energy stored in the battery.
+The returned value is positive if the battery is charged and negative if the battery is discharged.
+\subsubsection{Demand profile}\label{subsec:Demand}
+
+Our demand profile is based on data from \texttt{\url{https://open-power-system-data.org/}}. We use the \glqq{}Household Data\grqq{} package from 2017-11-10. The calculations are based on the 60 minutes interval data set. We use two different profiles, one is based on the feed \textit{DE\_KN\_residential2 \_grid\_import} and the other is based on \textit{DE\_KN\_industrial3\_grid\_import}. The raw data from Open Power System Data always report the total amount of energy used so far in kWh. Based on this we needed to calculate the difference between the data points to the get change of the total value per hour. After that, we calculated the average value for each hour of the day for all data points. The consumer in profile 1 used in total about 4500 kWh in the time between the 15. April 2015 and the 1. February 2017. This equals roughly a total of 2500 kWh per year. The second consumer used in total 695000 kWh in the time between 11. February 2016 and 09. February 2017. Our electricity provider estimates a small one or two people household for the first consumer based on the total usage per year \cite{enbw}. Based on this we amused a floor area size of 50 $m^{2}$. \Cref{fig:profile1} and \cref{fig:profile2} visualize the demand profiles. The user does not only provide an area but also an average daily occupancy. We assumed that the latter value is the fraction of the time in which the building is in use. Based on this we calculate the final energy demand D for each hour for a building with this formula $ D = profileDemandPerSquareMeter_{hourOfTheDay} * floorAreaSize * averageDailyOccupancy$. 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1.00\textwidth]{../figures/profile1.pdf}
+	\caption{Demand profile 1: Home building}
+	\label{fig:profile1}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1.00\textwidth]{../figures/profile2.pdf}
+	\caption{Demand profile 2: Office building}
+	\label{fig:profile2}
+\end{figure}

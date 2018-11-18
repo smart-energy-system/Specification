@@ -1,0 +1,142 @@
+\subsubsection{Weather service}\label{sec:weatherservice}
+For our smart energy system, we need a weather service which can provide all needed data on an hourly basis.
+There is one weather service which fulfills our needs more than appropriate.
+The weather service \url{weatherbit.io} has different kinds of endpoints on its API.
+In our case we use two of them, the current weather data API and the 48 hours weather forecast API.
+
+Before we take a look at the endpoints provided to the user and their responses, we want to present the data collectable on weatherbit.io.
+An example response of the current weather API is shown in listing \ref{lst:weatherdata}.
+The property  \texttt{data} of the JSON object contains an array of weather data points.
+For current weather API there is only one object in the array.
+But for the forecast there are up to 48 objects, one for every hour of the forecast.
+\begin{lstlisting}[caption={Example response of weatherbit.io for $lat=31.23$ and $lon=121.47$}, label={lst:weatherdata}, frame=single, language=json]
+ {
+    "data": [
+        {
+            "wind_cdir": "SSE",
+            "rh": 100,
+            "pod": "n",
+            "lon": 121.47,
+            "pres": 1012.2,
+            "timezone": "Asia/Shanghai",
+            "ob_time": "2018-11-07 20:35",
+            "country_code": "CN",
+            "clouds": 0,
+            "vis": 10,
+            "solar_rad": 0,
+            "state_code": "23",
+            "wind_spd": 0.89,
+            "lat": 31.23,
+            "wind_cdir_full": "south-southeast",
+            "slp": 1013.2,
+            "datetime": "2018-11-07:20",
+            "ts": 1541622900,
+            "station": "E7205",
+            "h_angle": -90,
+            "dewpt": 13.9,
+            "uv": 0,
+            "dni": 0,
+            "wind_dir": 156,
+            "elev_angle": -29.2797,
+            "ghi": 0,
+            "dhi": 0,
+            "precip": null,
+            "city_name": "Shanghai",
+            "weather": {
+                "icon": "c01n",
+                "code": "800",
+                "description": "Clear sky"
+            },
+            "sunset": "09:00",
+            "temp": 13.9,
+            "sunrise": "22:14",
+            "app_temp": 13.9
+        }
+    ],
+    "count": 1
+}
+\end{lstlisting}
+From all those data we chose only to store \texttt{lat} for latitute, \texttt{lon} for longitute, \texttt{pres} for air pressure, \texttt{rh} for relative humidity, \texttt{ghi} for global horizontal solar irradiance, \texttt{wind\_spd} for wind speed, \texttt{temp} for the temperature, and the timestamp in UTC format.
+
+The API for the current weather data returns current weather data of over 45.000 stations.
+Every API request will return the nearest, and most recent observation.
+There are several endpoints available in the API.
+For example, a user can get current weather observation by lat/lon as we do or by city name.
+All endpoints differ only on their required query parameters.
+They define whether to get the observation by lat/lon, city name or any other possible way.
+The basepath for all endpoints is \texttt{https://api.weatherbit.io/v2.0/current} and the supported method is \texttt{GET}.
+To get the data in the metric format you have to add an additional query parameter \texttt{unit=m}.
+Every request must provide an API key in query parameters.\cite{weatherbit}
+This API key can be requested by creating an account on weatherbit.io.
+After creating an account a user has to choose a pricing plan.
+For our system the free plan is totally sufficient.
+
+The API for the weather forecast data returns the weather forecast for up to 48 hours on an hourly basis.
+Nevertheless, we only request it for 24 hours.
+While the basepath is now \texttt{https://api.weatherbit.io/v2.0/forecast/hourly}, the provided query parameter are the same with an additional query parameter \texttt{hours} which must get a value between 0 and 48 to specify the size of the forecast.
+
+\subsubsection{Our WeatherCollector service}\label{sec:weathercollector}
+To gather weather data for different locations and store it into a database we build a service, which is under MIT licence available on GitHub\footnote{\url{https://github.com/smart-energy-system/WeatherCollector}}.
+The service runs a NodeJS express server with two endpoints to create or delete \texttt{WeatherCollector} objects. 
+A \texttt{WeatherCollector} object gathers every hour current weather data for a given location as well as 24 hours weather forecast on an hourly basis and stores the data in a database. 
+While gathering new forecast data, the old deprecated data is getting replaced, so there is always the latest 24 hour forecast data. Multiple WeatherCollector objects are possible to collect weather data for different locations at the same time.
+
+There are several dependencies you have to install before running the server. 
+Since the code runs on NodeJS version 8 or higher with a current npm, you need to have this installed first.
+First, run \texttt{npm install} to install needed dependency packages. 
+You can look up the installed libraries and their versions in \texttt{package.json} file. 
+After installing the packages, you need to create the database. 
+Therefore, run \texttt{node DBCreator.js} to create the database file and required SQL tables. 
+Now you are nearly ready to run the server.
+
+You can test the functionality without running the complete server.
+You just need to run \texttt{WeatherCollectorTest.js} to play around with some locations. 
+On the first run of the module you need to provide it with your weatherbit.io API key, latitute and longitute of the location: \texttt{node WeatherCollectorTest.js "<API Key>" <lat> <lon> "<mode>"}. 
+Keep in mind that you already need the API key requested from weatherbit.io.
+There are 5 modes available to test:
+\begin{itemize}
+	\item \texttt{collect}: Collects a current weather data of the given location and stores it into the database
+	\item \texttt{get}: Gets the latest stored current weather data of the given location
+	\item \texttt{collect forecast}: Collects a 24 hour weather forecast on hourly basis for a given location and stores it into the database
+	\item \texttt{get forecast}: Gets the latest version of the forecast weather data of the given location
+	\item \texttt{start}: Starts a WeatherCollector object on hourly picking new weather data (current and forecast) and stores the data into the database.
+\end{itemize}
+
+If you did run the complete run command once, a test config file was created. 
+So unless you want to change your API key or the location you can shorten the run command a bit, using only \texttt{node WeatherCollectorTest.js "<mode>"}.
+
+You can simply run the server with \texttt{npm start <API key>}. 
+This will create a config file with your API key, so later you can start the server just running \texttt{npm start} command.
+
+Since the service is a REST service, there are two HTTP REST endpoints available on the server, one for creating WeatherCollector objects and one for deleting them.
+To create a new WeatherCollector object, you can send an \texttt{POST} request against \texttt{<basepath>/weathercollectors} providing the body shown in listing \ref{lst:postbody} as content-type \texttt{application/json}. 
+\begin{lstlisting}[caption={Body of \texttt{POST} request endpoint}, label={lst:postbody}, frame=single, language=json]
+{ 
+	"lat":<lat>, 
+	"lon": <lon> 
+}
+\end{lstlisting} 
+If \texttt{lat} and \texttt{lon} are correct and the object is created successfully you will get status 201 and a JSON object as shown in listing \ref{lst:postresponse} in return.
+\begin{lstlisting}[caption={Body of the response of the \texttt{POST} request}, label={lst:postresponse}, frame=single, language=json]
+{ 
+	"lat": <lat>, 
+	"lon":<lon>, 
+	"id":<id> 
+}
+\end{lstlisting}
+The \texttt{id} is the ID of the object created. 
+You will need it to delete the object later, so better save it anywhere. 
+After creating the object, the object is requesting the weather data (current and forecast) every hour. 
+If one of the request body properties is not defined you will get a status 400 in return.
+
+To delete a WeatherCollector object of given ID, you can send an \texttt{DELETE} request against \texttt{<basepath>/weathercollectors} providing the in body the data shown in listing \ref{lst:deletebody} as content-type \texttt{application/json}.
+\begin{lstlisting}[caption={Body of \texttt{DELETE} request endpoint}, label={lst:deletebody}, frame=single, language=json]
+{ 
+	"id":<id> 
+}
+\end{lstlisting}
+If \texttt{id} is set and there is a WeatherCollector object with such an ID, it will be deleted and therefore stops gathering data. 
+The return will be status 200. 
+If id is not set or there is no WeatherCollector object with such an ID, the return will be status 400.
+
+
