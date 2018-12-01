@@ -16,4 +16,8 @@ The first one is the sum over all energy demand of all  demander at a given time
 The second one is the again the part for the batteries.
 Here we calculate the energy demand of all batteries at given time step.
 In the last part we again have the connection to the main grid.
-Here we add the energy we provide to the main grid, in other words what the main grid can demand, at a given time step.\\<
+Here we add the energy we provide to the main grid, in other words what the main grid can demand, at a given time step.\\
+\subsection{Objective of the optimization problem}
+To maximize the profit in a specified interval of timesteps $t \in T$ between the time steps $a \in T$ and $b \in T$ we propose the following function:\\
+$\max_{p \in P}{(\sum_{t=a}^{b}{((G_{prod}(t)*price(t))-(G_{demand}(t)*cost(t)))})}$\\
+Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{demand}$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before.
