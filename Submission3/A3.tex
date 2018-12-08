@@ -1,12 +1,14 @@
 \subsection{Balance within the microgrid}
 To guarantee the balance in the microgrid as defined in the slides we have to formulate a mathematical equation to use as a constraint.
 We came up with the following equation:\\
-$\forall t \in T: \sum_{s \in S}{s_{prod}(t)} + \sum_{b \in B}{b_{prod}(t)} + G_{prod}(t) = \sum_{d \in D}{d_{demand}(t)} = \sum_{b \in B}{b_{demand}(t)} + G_{demand}(t)$\\
+\begin{equation} \label{eq1}
+\forall t \in T: \sum_{s \in S}{s_{prod}(t)} + \sum_{b \in B}{b_{prod}(t)} + G_{prod}(t) = \sum_{d \in D}{d_{demand}(t)} = \sum_{b \in B}{b_{demand}(t)} + G_{demand}(t)
+\end{equation}
 As one can see, for all time steps t in the set of all time steps T the equation has to hold true. 
 This is the constraint for the whole microgrid. The left side of the equation represents the energy supplied by the supplier, the batteries and the main grid, the right side represents the consumers, the batteries while charging and the main grid while exporting energy. If the balance between the consumers and the suppliers is disturbed, severe consequences can happen. Any imbalance results in a change in the frequency. This change may forces more suppliers to stop production because most suppliers can only operate in a narrow frequency range. As a result of this the imbalance ingresses even more. If the change in the frequency exceeds a certain threshold suppliers and consumers still connected to the grid could be damaged. 
 The equation itself is compartmentalized into different factors.
 On the supply side we have the sum the produced energy in time step t of all suppliers of the system, regardless of wind or solar energy.
-We get those values from our model given data for the time step and weather conditions. Our software calculates energy demand forecast and supply forecast based on models of the supplier and consumers. Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure. This equation is based on empirical data and helps us to incorporate the weather forecast in the wind energy supply forecast. Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. This supports reuse-ability of the solver and the models for it. The forecast data is provided as an array of data which contains a value for each time step. The values represent the supply or demand and are measured in Watts. 
+We get those values from our model given data for the time step and weather conditions. Our software calculates energy demand forecast and supply forecast based on models of the supplier and consumers. Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure \cite{NOAA}. This equation is based on empirical data and helps us to incorporate the weather forecast in the wind energy supply forecast. Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. This supports reuse-ability of the solver and the models for it. The forecast data is provided as an array of data which contains a value for each time step. The values represent the supply or demand and are measured in Watts. 
 The second part is the energy provided by all batteries at a given time step.
 The connection to the main grid is resolved in the third part of the supply side of the equation.
 It gives the energy provided by the main grid at a given time step t.\\
@@ -17,9 +19,17 @@ The second one is the again the part for the batteries.
 Here we calculate the energy demand of all batteries at a given time step.
 The last part represents the connection to the main grid.
 Here we add the energy we provide to the main grid, in other words, what the main grid can demand, at a given time step.\\
-TODO:Not chargeing at the same time,
+
+There are additional constrains which have to hold true in our simulation. 
+For example it is not possible to charge and discharge batteries at the same time.
+
+TODO: Time shifiting, Main grid import and export at the same time? 
+
 shifting
 \subsection{Objective of the optimization problem}
 To maximize the profit in a specified interval of timesteps $t \in T$ between the time steps $a \in T$ and $b \in T$ we propose the following function:\\
-$\max_{p \in P}{(\sum_{t=a}^{b}{((G_{prod}(t)*price(t))-(G_{demand}(t)*cost(t)))})}$\\
+\begin{equation} \label{eq:opt}
+\max_{p \in P}{(\sum_{t=a}^{b}{((G_{prod}(t)*price(t))-(G_{demand}(t)*cost(t)))})}
+\end{equation}
 Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{demand}$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before.
+\subsection{Explanation Table}
