@@ -1,7 +1,7 @@
 \subsection{Balance within the microgrid}
 To guarantee the balance in the microgrid as defined in the slides we have to formulate a mathematical equation to use as a constraint.
 We came up with the following equation:\\
-\begin{equation} \label{eq1}
+\begin{equation} \label{eq1:balance}
 \forall t \in T: \sum_{s \in S}{s_{prod}(t)} + \sum_{b \in B}{b_{prod}(t)} + G_{prod}(t) = \sum_{d \in D}{d_{demand}(t)} = \sum_{b \in B}{b_{demand}(t)} + G_{demand}(t)
 \end{equation}
 As one can see, for all time steps t in the set of all time steps T the equation has to hold true. 
@@ -32,4 +32,33 @@ To maximize the profit in a specified interval of timesteps $t \in T$ between th
 \max_{p \in P}{(\sum_{t=a}^{b}{((G_{prod}(t)*price(t))-(G_{demand}(t)*cost(t)))})}
 \end{equation}
 Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{demand}$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before.
-\subsection{Explanation Table}
+\subsection{Nomenclature Table}
+	\begin{longtable}{|c|p{10cm}|c|c|}
+		\toprule
+		\textbf{Symbol} & \textbf{Description} & \textbf{Unit} & \textbf{Equation} \\ \midrule
+		T & The set of all time steps. The step width is 1h and usually 24 steps are used. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
+		t & A single step from the set T. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
+		S & The set of all suppliers (Different wind turbines, solar panels...). & Watt & \Cref{eq1:balance} \\ \midrule
+		s & A single supplier from the set S. & & \Cref{eq1:balance} \\ \midrule
+		$s_{prod}(t)$ & The energy supply from a single supplier for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		B & The set of all batteries. & & \Cref{eq1:balance} \\ \midrule
+		b & A single battery. & & \Cref{eq1:balance} \\ \midrule
+		$b_{prod}(t)$ & The energy supply from a single battery for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$G_{prod}(t)$ & The energy supply from the main grid for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		D & The set of all consumers (Homes, commercial buildings) & & \Cref{eq1:balance} \\ \midrule
+		d & A single consumer from the set D & & \Cref{eq1:balance} \\ \midrule
+		$d_{demand}(t)$ & The energy demand for a single consumer at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$b_{demand}(t)$ & The energy demand for a single battery at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$G_{demand}(t)$ & The energy exported by the microgrid to the main grid at a specific time step t. & Watt & \Cref{eq1:balance} \\
+		P & The set of all possible configurations &  & \Cref{eq:opt} \\ \midrule
+		p & A single configuration &  & \Cref{eq:opt} \\ \midrule
+		a & A single step form the set T. It marks the first time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
+		b & A single step form the set T. It marks the last time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
+		price(t) & The function provides the price for energy which is sold to the main grid for a specific time step t. & Cent & \Cref{eq:opt} \\ \midrule
+		cost(t) & The function provides the cost for energy which is imported from the main grid for a specific time step t. & Cent & \Cref{eq:opt} \\
+		\bottomrule
+			\caption[Nomenclature Table]{Describes every Symbol}
+		\label{tab:Ergebnisse}
+	\end{longtable}
+
+
