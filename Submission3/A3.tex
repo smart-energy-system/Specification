@@ -31,9 +31,10 @@ To maximize the profit in a specified interval of timesteps $t \in T$ between th
 \begin{equation} \label{eq:opt}
 \max_{p \in P}{(\sum_{t=a}^{b}{((G_{prod}(t)*price(t))-(G_{demand}(t)*cost(t)))})}
 \end{equation}
-Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{demand}$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before.
+Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{demand}$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before. All configurations from P have to satisfy all the constraints. The formula consists of two main parts. The minuend in the sum calculates the profit for exporting energy to the main grid for these time step. For this calculation, the total energy export for this time step is multiplied by the price for the energy. The subtrahend in the sum expresses the cost for importing energy from the main grid. It consists of the total imported energy multiplied by the cost for importing energy at this time step. There are different possibilities to improve the total profit. For example, one could sell energy at a high price. Another possibility is to store energy if the price for selling is low. 
+
 \subsection{Nomenclature Table}
-	\begin{longtable}{|c|p{10cm}|c|c|}
+	\begin{longtable}{|c|p{.50\textwidth}|c|c|}
 		\toprule
 		\textbf{Symbol} & \textbf{Description} & \textbf{Unit} & \textbf{Equation} \\ \midrule
 		T & The set of all time steps. The step width is 1h and usually 24 steps are used. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
@@ -54,8 +55,8 @@ Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{de
 		p & A single configuration &  & \Cref{eq:opt} \\ \midrule
 		a & A single step form the set T. It marks the first time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
 		b & A single step form the set T. It marks the last time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
-		price(t) & The function provides the price for energy which is sold to the main grid for a specific time step t. & Cent & \Cref{eq:opt} \\ \midrule
-		cost(t) & The function provides the cost for energy which is imported from the main grid for a specific time step t. & Cent & \Cref{eq:opt} \\
+		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific time step t. & Cent per Wh & \Cref{eq:opt} \\ \midrule
+		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific time step t. & Cent per Wh& \Cref{eq:opt} \\
 		\bottomrule
 			\caption[Nomenclature Table]{Describes every Symbol}
 		\label{tab:Ergebnisse}
