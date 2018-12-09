@@ -1,22 +1,25 @@
 \subsection{Balance within the microgrid}
 To guarantee the balance in the microgrid as defined in the slides we have to formulate a mathematical equation to use as a constraint.
 We came up with the following equation:\\
-\begin{equation} \label{eq1:balance}
-\forall t \in T: \sum_{s \in S}{s_{prod}(t)} + \sum_{b \in B}{b_{prod}(t)} + G_{prod}(t) = \sum_{d \in D}{d_{demand}(t)} = \sum_{b \in B}{b_{demand}(t)} + G_{demand}(t)
-\end{equation}
+\begin{align} \label{eq1:balance}
+\begin{split}
+\forall t \in T: \sum_{s \in S}{P_{s}(t)} + \sum_{b \in B}{P_{b}(t)} + P_{g}(t) = \sum_{d \in D}({P_{d}(t)} + PposShift_d(t) - PnegShift_d(t))
+\\ - \sum_{b \in B}{Pd_{b}(t)} + Pd_g(t)
+\end{split}
+\end{align}
 As one can see, for all time steps t in the set of all time steps T the equation has to hold true. 
-This is the constraint for the whole microgrid. The left side of the equation represents the energy supplied by the supplier, the batteries and the main grid, the right side represents the consumers, the batteries while charging and the main grid while exporting energy. If the balance between the consumers and the suppliers is disturbed, severe consequences can happen. Any imbalance results in a change in the frequency. This change may forces more suppliers to stop production because most suppliers can only operate in a narrow frequency range. As a result of this the imbalance ingresses even more. If the change in the frequency exceeds a certain threshold suppliers and consumers still connected to the grid could be damaged. 
+This is the constraint for the whole microgrid. The left side of the equation represents the power supplied by the supplier, the batteries and the main grid, the right side represents the consumers, the batteries while charging and the main grid while exporting energy. If the balance between the consumers and the suppliers is disturbed, severe consequences can happen. Any imbalance results in a change in the frequency. This change may forces more suppliers to stop production because most suppliers can only operate in a narrow frequency range. As a result of this the imbalance ingresses even more. If the change in the frequency exceeds a certain threshold suppliers and consumers still connected to the grid could be damaged. 
 The equation itself is compartmentalized into different factors.
-On the supply side we have the sum the produced energy in time step t of all suppliers of the system, regardless of wind or solar energy.
-We get those values from our model given data for the time step and weather conditions. Our software calculates energy demand forecast and supply forecast based on models of the supplier and consumers. Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure \cite{NOAA}. This equation is based on empirical data and helps us to incorporate the weather forecast in the wind energy supply forecast. Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. This supports reuse-ability of the solver and the models for it. The forecast data is provided as an array of data which contains a value for each time step. The values represent the supply or demand and are measured in Watts. 
-The second part is the energy provided by all batteries at a given time step.
+On the supply side we have the sum the power in time step t of all suppliers of the system, regardless of wind turbines or solar panels.
+We get those values from our model given data for the time step and weather conditions. Our software calculates demand forecast and supply forecast based on models of the supplier and consumers. Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure \cite{NOAA}. This equation is based on empirical data and helps us to incorporate the weather forecast in the wind supply forecast. Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. This supports reuse-ability of the solver and the models for it. The forecast data is provided as an array of data which contains a value for each time step. The values represent the supply or demand and are measured in Watts. 
+The second part is the power provided by all batteries at a given time step.
 The connection to the main grid is resolved in the third part of the supply side of the equation.
-It gives the energy provided by the main grid at a given time step t.\\
+It gives the power provided by the main grid at a given time step t.\\
 For the demand side, we chose a similar approach.
 We split the equation into several smaller parts.
-The first one is the sum over all energy consumers of at a given time step. To calculate the total energy demand. Comparable to the supply forecast, the demand forecast is generated before the optimization step. It is based on the demand profiles described in \cref{subsec:Demand}. The demand is provided as an array of constants to the solver and measured in Watts. Because the supply and the demand are provided as constants to the optimization component, we did not formulate any constraints for the supplier or the consumers.
+The first one is the sum over all consumers of at a given time step. To calculate the total demand. Comparable to the supply forecast, the demand forecast is generated before the optimization step. It is based on the demand profiles described in \cref{subsec:Demand}. The demand is provided as an array of constants to the solver and measured in Watts. Because the supply and the demand are provided as constants to the optimization component, we did not formulate any constraints for the supplier or the consumers.
 The second one is the again the part for the batteries.
-Here we calculate the energy demand of all batteries at a given time step.
+Here we calculate the demand of all batteries at a given time step.
 The last part represents the connection to the main grid.
 Here we add the energy we provide to the main grid, in other words, what the main grid can demand, at a given time step.\\
 
@@ -29,9 +32,9 @@ shifting
 \subsection{Objective of the optimization problem}
 To maximize the profit in a specified interval of timesteps $t \in T$ between the time steps $a \in T$ and $b \in T$ we propose the following function:\\
 \begin{equation} \label{eq:opt}
-\max_{p \in P}{(\sum_{t=a}^{b}{((G_{prod}(t)*price(t))-(G_{demand}(t)*cost(t)))})}
+\max_{p \in P}{(\sum_{t=a}^{b}{((E(t)*price(t))-(I(t)*cost(t)))})}
 \end{equation}
-Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{demand}$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before. All configurations from P have to satisfy all the constraints. The formula consists of two main parts. The minuend in the sum calculates the profit for exporting energy to the main grid for these time step. For this calculation, the total energy export for this time step is multiplied by the price for the energy. The subtrahend in the sum expresses the cost for importing energy from the main grid. It consists of the total imported energy multiplied by the cost for importing energy at this time step. There are different possibilities to improve the total profit. For example, one could sell energy at a high price. Another possibility is to store energy if the price for selling is low. 
+Where P is th set of all possible decision configurations. $E(t)$ and $I(t)$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before. All configurations from P have to satisfy all the constraints. The formula consists of two main parts. The minuend in the sum calculates the profit for exporting energy to the main grid for these time step. For this calculation, the total energy export $E(t)$ for this time step is multiplied by the price for the energy. The subtrahend in the sum expresses the cost for importing energy from the main grid. It consists of the total imported energy $I(t)$ multiplied by the cost for importing energy at this time step. There are different possibilities to improve the total profit. For example, one could sell energy at a high price. Another possibility is to store energy if the price for selling is low. For our simulation we use time steps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in Wh while the unit of all values of the previous equation is Watt.
 
 \subsection{Nomenclature Table}
 	\begin{longtable}{|c|p{.50\textwidth}|c|c|}
@@ -41,20 +44,22 @@ Where P is th set of all possible decision configurations. $G_{prod}$ and $G_{de
 		t & A single step from the set T. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
 		S & The set of all suppliers (Different wind turbines, solar panels...). & Watt & \Cref{eq1:balance} \\ \midrule
 		s & A single supplier from the set S. & & \Cref{eq1:balance} \\ \midrule
-		$s_{prod}(t)$ & The energy supply from a single supplier for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{s}(t)$ & The energy supply from a single supplier for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
 		B & The set of all batteries. & & \Cref{eq1:balance} \\ \midrule
 		b & A single battery. & & \Cref{eq1:balance} \\ \midrule
-		$b_{prod}(t)$ & The energy supply from a single battery for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$G_{prod}(t)$ & The energy supply from the main grid for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{s}(t)$ & The energy supply from a single battery for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{g}(t)$ & The energy supply from the main grid for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
 		D & The set of all consumers (Homes, commercial buildings) & & \Cref{eq1:balance} \\ \midrule
 		d & A single consumer from the set D & & \Cref{eq1:balance} \\ \midrule
-		$d_{demand}(t)$ & The energy demand for a single consumer at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$b_{demand}(t)$ & The energy demand for a single battery at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$G_{demand}(t)$ & The energy exported by the microgrid to the main grid at a specific time step t. & Watt & \Cref{eq1:balance} \\
+		$P_{d}(t)$ & The energy demand for a single consumer at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{b}(t)$ & The energy demand for a single battery at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$Pd_{g}(t)$ & The energy exported by the microgrid to the main grid at a specific time step t. & Watt & \Cref{eq1:balance} \\
 		P & The set of all possible configurations &  & \Cref{eq:opt} \\ \midrule
 		p & A single configuration &  & \Cref{eq:opt} \\ \midrule
 		a & A single step form the set T. It marks the first time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
 		b & A single step form the set T. It marks the last time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
+		E(t) & The total energy exported to the main grid for a specific time step t. & Wh & \Cref{eq:opt} \\ \midrule
+		I(t) & The total energy imported from the main grid for a specific time step t. & Wh & \Cref{eq:opt} \\ \midrule
 		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific time step t. & Cent per Wh & \Cref{eq:opt} \\ \midrule
 		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific time step t. & Cent per Wh& \Cref{eq:opt} \\
 		\bottomrule
