@@ -31,20 +31,10 @@ This supports reuse-ability of the solver and the models for it.
 The forecast data is provided as an array of data which contains a value for each timestep. 
 The values represent the supply or demand and are measured in $Watts$.  %TODO Auf welche Einheit haben wir uns jetzt entschieden?
 
-\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$. Additionally, there is a limit on the charge and the discharge rate. Furthermore, charging is not 100\% efficient. Each battery has a fill level for each time step. It holds the information how much charge is stored in the battery at each step. This results in the following constraints.
+\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$. Additionally, there is a limit on the charge and the discharge rate. This results in the following constraint:
 \begin{align} \label{eq:limitDischarge}
 \begin{split}
 \forall b \in B, \forall t \in T: P_{b}(t) < maxDischargeRate_{b}
-\end{split}
-\end{align}
-\begin{align} \label{eq:limitCharge}
-\begin{split}
-\forall b \in B, \forall t \in T: Pd_{b}(t) < maxChargeRate_{b}
-\end{split}
-\end{align}
-\begin{align} \label{eq:effi}
-\begin{split}
-\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = \cfrac{Pd_{b}(t)*chargeEfficiency_b}{100}
 \end{split}
 \end{align}
  % TODO wiederholt sich das nicht von oben?
@@ -78,10 +68,46 @@ For all consumers this constraints has to hold true:
 \forall t \in T: \sum\limits_{t\in T} PposShift(t) = \sum\limits_{t\in T} PnegShift(t)\\
 \end{split}
 \end{align}
+
+We need to make an upper bound for the negative shifting which a user can provide for the house or commercial building demand, e.g. 30\%. Additionally, shifts can only happen in blocks. It is only possible to shift the max value of the shift or noting. 
+The constraint for the house shifting is shown in \Cref{eq:shiftingUpperBound}.
+The constraint for the commercial building is the same.
+\begin{align} \label{eq:shiftingUpperBound}
+\begin{split}
+\forall l \in H\cup C, \forall t \in T: (PnegShift_l(t) = \cfrac{P_{l}(t) * n}{100}) \veebar (PnegShift_{l}(t) = 0)
+\end{split}
+\end{align}
+For this constraint n is provided by the user.\\
+There are two possibilities for shifting demand which can be chosen by a user.
+The first one is used if the optimizer is not strong enough to solve variable shifting for every timestep.
+In this version, we allow the optimizer to shift one time for a home with the constraints shown in \Cref{eq:numberOfShifts}.
+We did the same for the commecial buildings.
+The second version allows variable shifting for every timestep.
+\begin{align} \label{eq:numberOfShifts}
+\begin{split}
+\forall h \in H: sumOfPosShifts_{h} = \sum\limits_{t = 0}^{t_{max}} PposShift_h(t)\\
+sumOfPosShifts_{h} \leq 1
+\end{split}
+\end{align}
+
+The sum of negative shifting is set equals the sum of positiv shifting to build the balance between them.
+In addition to this, the $PnegShift_h(t)$ has to be less or equals than 1 too.
+So every building can shift at maximum once  n\% of their demand to another timestep.
+
 \textbf{Demand of batteries:}
 The third part calculates the demand of all batteries at a given timestep $t$.
 If we have more supply than demand, the solver can either export the unnecessarily produced energy to the main grid or store it in a battery for later use.
-The storage of energy in the battery has a small loss of energy.
+The storage of energy in the battery has a small loss of energy. Each battery has a fill level for each time step. It holds the information how much charge is stored in the battery at each step. This results in the following constraints.
+\begin{align} \label{eq:limitCharge}
+\begin{split}
+\forall b \in B, \forall t \in T: Pd_{b}(t) < maxChargeRate_{b}
+\end{split}
+\end{align}
+\begin{align} \label{eq:effi}
+\begin{split}
+\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = \cfrac{Pd_{b}(t)*chargeEfficiency_b}{100}
+\end{split}
+\end{align}
 
 \subsubsection{Additional Constraints}
 There are additional constrains which have to hold true in our simulation.
@@ -97,31 +123,6 @@ battery_{demand} = \sum\limits_{b\in B} Pd_{b}(t)\\
 \end{align}
 
 There is also such an constraint for the shifting part to prohibit positive and negative shifting at the same time.
-
-We need to make an upper bound for the positive shifting which a user can provide for the house or commecial building demand, e.g. 30\%.
-The constraint for the house shifting is shown in \Cref{eq:shiftingUpperBound}.
-The constraint for the commecial building is the same.
-\begin{align} \label{eq:shiftingUpperBound}
-\begin{split}
-PposShift_h(t) = \cfrac{P_{h}(t) * n}{100}
-\end{split}
-\end{align}
-
-There are two possiblilities for shifting demand which can be chosen by a user.
-The first one is used if the optimizer is not strong enough to solve variable shifting for every timestep.
-In this version, we allow the optimizer to shift one time for a home with the constraints shown in \Cref{eq:numberOfShifts}.
-We did the same for the commecial buildings.
-The second version allows variable shifting for every timestep.
-\begin{align} \label{eq:numberOfShifts}
-\begin{split}
-\forall h \in H: sumOfPosShifts_{h} = \sum\limits_{t = 0}^{t_{max}} PposShift_h(t)\\
-sumOfPosShifts_{h} \leq 1
-\end{split}
-\end{align}
-
-The sum of negative shifting is set equals the sum of positiv shifting to build the balance between them.
-In addition to this, the $PnegShift_h(t)$ has to be less or equals than 1 too.
-So every building can shift at maximum once  n\% of their demand to another timestep.
 
 \subsection{Objective of the optimization problem}
 We import or export energy from the main grid with $P_{g}(t)$.
