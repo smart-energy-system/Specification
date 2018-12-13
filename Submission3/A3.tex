@@ -79,7 +79,7 @@ The constraint for the house shifting is shown in \Cref{eq:shiftingUpperBound}.
 The constraint for the commercial building is the same.
 \begin{align} \label{eq:shiftingUpperBound}
 \begin{split}
-\forall l \in H\cup C, \forall t \in T: (PnegShift_l(t) = \cfrac{P_{l}(t) * n}{100}) \veebar (PnegShift_{l}(t) = 0)
+\forall l \in H\cup C, \forall t \in T: \left(PnegShift_l(t) = \cfrac{P_{l}(t) * n}{100}\right) \veebar (PnegShift_{l}(t) = 0)
 \end{split}
 \end{align}
 For this constraint n is provided by the user.\\
@@ -101,7 +101,7 @@ The storage of energy in the battery has a small loss of energy.
 \end{align}
 \begin{align} \label{eq:effi}
 \begin{split}
-\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = \cfrac{Pd_{b}(t)*chargeEfficiency_b}{100}
+\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - \left( \cfrac{Pd_{b}(t)*chargeEfficiency_b}{100}\right)
 \end{split}
 \end{align}
 
