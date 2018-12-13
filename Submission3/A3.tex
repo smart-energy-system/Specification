@@ -57,11 +57,53 @@ If we have more supply than demand, the solver can either export the unnecessari
 The storage of energy in the battery has a small loss of energy.
 
 \subsubsection{Additional Constraints}
-There are additional constrains which have to hold true in our simulation. 
-For example it is not possible to charge and discharge batteries at the same time.
+There are additional constrains which have to hold true in our simulation.
+
+We don't want the batteries charge and discharge at the same time.
+So we need a constraint to prohibit this kind of behaviour as shown in \Cref{eq:batteryConstraint}
+\begin{align} \label{eq:batteryConstraint}
+\begin{split}
+battery_{supply} = \sum\limits_{b\in B} P_{b}(t)\\
+battery_{demand} = \sum\limits_{b\in B} Pd_{b}(t)\\
+(battery_{supply} = 0 \wedge battery_{demand} = 0 ) \vee (battery_{supply} > 0 \veebar battery_{demand} > 0)
+\end{split}
+\end{align}
+
+There is also such an constraint for the shifting part to prohibit positive and negative shifting at the same time.
+
+We need to make an upper bound for the positive shifting which is 30\% of the house or commecial building demand.
+To make the solution space a bit smaller we considered to set the shifting value directly to 30\%.
+The constraint for the house shifting is shown in \Cref{eq:shiftingUpperBound},
+The constraint for the commecial building is the same.
+\begin{align} \label{eq:shiftingUpperBound}
+\begin{split}
+PposShift_h(t) = \cfrac{P_{h}(t) * 30}{100}
+\end{split}
+\end{align}
+
+
+Since our optimiser is not strong enough to solve variable shifting for every time step, we decided to allow the optimiser only to shift one time for a home with the constraints shown in \Cref{eq:numberOfShifts}.
+We did the same for the commecial buildings.
+\begin{align} \label{eq:numberOfShifts}
+\begin{split}
+\forall h \in H: sumOfPosShifts_{h} = \sum\limits_{t = 0}^{t_{max}} PposShift_h(t)\\
+sumOfPosShifts_{h} \leq 1
+\end{split}
+\end{align}
+
+The sum of negative shifting is set equals the sum of positiv shifting to build the balance between them.
+In addition to this, the $PnegShift_h(t)$ has to be less or equals than 1 too.
+So every building can shift at maximum once 30\% of their demand to another time step.
+
+
 TODO
 
 \subsection{Objective of the optimization problem}
+We import or export energy from the main grid with $P_{g}(t)$.
+If $P_{g}(t) < 0$ than energy will be exported since the overall supply gets less than only with the batteries and renewable supplier.
+If $P_{g}(t) > 0$ than energy will be imported since the overall supply gets more than only with the batteries and renewable supplier.
+We can use this later to computer our profit or loss.
+
 To maximize the profit in a specified interval of timesteps $t \in T$ between the time steps $a \in T$ and $b \in T$ we propose the following function:\\
 \begin{equation} \label{eq:opt}
 \max_{p \in P}{(\sum_{t=a}^{b}{((E(t)*price(t))-(I(t)*cost(t)))})}
