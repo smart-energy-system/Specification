@@ -26,16 +26,31 @@ Our software calculates demand forecast and supply forecast based on models of t
 Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. 
 For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure \cite{NOAA}. 
 This equation is based on empirical data and helps us to incorporate the weather forecast in the wind supply forecast. 
-Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. 
+Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. As a result of this we don`t need any constrains for the consumer or suppliers. 
 This supports reuse-ability of the solver and the models for it. 
 The forecast data is provided as an array of data which contains a value for each timestep. 
 The values represent the supply or demand and are measured in $Watts$.  %TODO Auf welche Einheit haben wir uns jetzt entschieden?
 
-\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$. % TODO wiederholt sich das nicht von oben?
+\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$. Additionally, there is a limit on the charge and the discharge rate. Furthermore, charging is not 100\% efficient. Each battery has a fill level for each time step. It holds the information how much charge is stored in the battery at each step. This results in the following constraints.
+\begin{align} \label{eq:limitDischarge}
+\begin{split}
+\forall b \in B, \forall t \in T: P_{b}(t) < maxDischargeRate_{b}
+\end{split}
+\end{align}
+\begin{align} \label{eq:limitCharge}
+\begin{split}
+\forall b \in B, \forall t \in T: Pd_{b}(t) < maxChargeRate_{b}
+\end{split}
+\end{align}
+\begin{align} \label{eq:effi}
+\begin{split}
+\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = \cfrac{Pd_{b}(t)*chargeEfficiency_b}{100}
+\end{split}
+\end{align}
+ % TODO wiederholt sich das nicht von oben?
 
 \textbf{Import and export to the main grid:} The connection to the main grid is resolved in the third part of the supply side of the equation.
-If we have more demand than supply, the solver will either use the energy stored in the battery or import energy from the main grid.
-While the import of energy from the battery is already satisfied with the battery supply we can here import energy from the main grid which generates us some costs.
+If we have more demand than supply, the solver will either use the energy stored in the battery or import energy from the main grid. While the demand is satisfied by the suppliers and the battery, no further energy import is necessary. But if the batteries are empty and the demand exceeds the supply more energy has to be imported from the main grid. The import of energy form the main grid costs money. If the supply exceeds the demand it is possible to charge the batteries or to export the energy to the main grid. Exporting energy to the main grid provides revenue.
 
 For the demand side, we chose a similar approach.
 
