@@ -31,10 +31,15 @@ This supports reuse-ability of the solver and the models for it.
 The forecast data is provided as an array of data which contains a value for each timestep. 
 The values represent the supply or demand and are measured in $Watts$.  %TODO Auf welche Einheit haben wir uns jetzt entschieden?
 
-\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$. Additionally, there is a limit on the charge and the discharge rate. This results in the following constraint:
+\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$.  Each battery has a fill level for each time step. It holds the information how much charge is stored in the battery at each step. This results in the following constraints. Additionally, there is a limit on the charge and the discharge rate. This results in the following constraint:
 \begin{align} \label{eq:limitDischarge}
 \begin{split}
 \forall b \in B, \forall t \in T: P_{b}(t) < maxDischargeRate_{b}
+\end{split}
+\end{align}
+\begin{align} \label{eq:discharge100}
+\begin{split}
+\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - Pd_{b}(t)
 \end{split}
 \end{align}
  % TODO wiederholt sich das nicht von oben?
@@ -88,7 +93,7 @@ There are two possibilities for shifting demand which can be chosen by a user. T
 \textbf{Demand of batteries:}
 The third part calculates the demand of all batteries at a given timestep $t$.
 If we have more supply than demand, the solver can either export the unnecessarily produced energy to the main grid or store it in a battery for later use.
-The storage of energy in the battery has a small loss of energy. Each battery has a fill level for each time step. It holds the information how much charge is stored in the battery at each step. This results in the following constraints.
+The storage of energy in the battery has a small loss of energy.
 \begin{align} \label{eq:limitCharge}
 \begin{split}
 \forall b \in B, \forall t \in T: Pd_{b}(t) < maxChargeRate_{b}
