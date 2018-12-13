@@ -17,7 +17,7 @@ Class=LaTeXView
 Document=ExXX_LastnameOfMembers.tex
 
 [Frame0_View0,0]
-TopLine=48
+TopLine=51
 Cursor=546
 
 [Frame1]
@@ -53,7 +53,7 @@ Class=LaTeXView
 Document=WeatherCollector.tex
 
 [Frame2_View0,0]
-TopLine=46
+TopLine=137
 Cursor=2529
 
 [Frame3]
@@ -89,10 +89,10 @@ Class=BibTeXView
 Document=bibliography.bib
 
 [Frame4_View0,0]
-TopLine=45
+TopLine=47
 Cursor=1832
 
 [SessionInfo]
 FrameCount=5
-ActiveFrame=2
+ActiveFrame=3
 
