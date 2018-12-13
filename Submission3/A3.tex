@@ -59,7 +59,7 @@ This results in the following constraints:
 
 \begin{align} \label{eq:shift}
 \begin{split}
-\forall l \in H\cup C, \forall t \in T: (PposShift_{l}(t) > 0 \veebar PnegShift_{l}(t) > 0)\\ \vee (PposShift_{l}(t) = 0 \wedge PnegShift_{l}(t) = 0)
+\forall l \in H\cup C, \forall t \in T: (PposShift_{l}(t) > 0 \veebar PnegShift_{l}(t) > 0)\\ \veebar (PposShift_{l}(t) = 0 \wedge PnegShift_{l}(t) = 0)
 \end{split}
 \end{align}
 For all consumers this constraints has to hold true:
@@ -78,20 +78,12 @@ The constraint for the commercial building is the same.
 \end{split}
 \end{align}
 For this constraint n is provided by the user.\\
-There are two possibilities for shifting demand which can be chosen by a user.
-The first one is used if the optimizer is not strong enough to solve variable shifting for every timestep.
-In this version, we allow the optimizer to shift one time for a home with the constraints shown in \Cref{eq:numberOfShifts}.
-We did the same for the commecial buildings.
-The second version allows variable shifting for every timestep.
+There are two possibilities for shifting demand which can be chosen by a user. The first one is used if the user wants to save time or has limited RAM. This variant allows only one shift per supplier. For example form 30\% of the load form 9 o'clock to 10 o'clock. This variant uses the constraint form \Cref{eq:numberOfShifts}. The second variant allows to shift form every hour to every other hour. This results depending on the input and the number of time steps in a very long run-time and a high RAM consumption.
 \begin{align} \label{eq:numberOfShifts}
 \begin{split}
 \forall l \in H\cup C: numberOfShifts_{h} \leq 1
 \end{split}
 \end{align}
-
-The sum of negative shifting is set equals the sum of positiv shifting to build the balance between them.
-In addition to this, the $PnegShift_h(t)$ has to be less or equals than 1 too.
-So every building can shift at maximum once  n\% of their demand to another timestep.
 
 \textbf{Demand of batteries:}
 The third part calculates the demand of all batteries at a given timestep $t$.
@@ -115,9 +107,7 @@ We don't want the batteries charge and discharge at the same time.
 So we need a constraint to prohibit this kind of behaviour as shown in \Cref{eq:batteryConstraint}
 \begin{align} \label{eq:batteryConstraint}
 \begin{split}
-battery_{supply} = \sum\limits_{b\in B} P_{b}(t)\\
-battery_{demand} = \sum\limits_{b\in B} Pd_{b}(t)\\
-(battery_{supply} = 0 \wedge battery_{demand} = 0 ) \vee (battery_{supply} > 0 \veebar battery_{demand} > 0)
+\forall b \in B, \forall t \in T: (P_{b}(t) = 0 \wedge Pd_{b}(t) = 0) \veebar (P_{b}(t)>0 \veebar Pd_{b}(t)>0)
 \end{split}
 \end{align}
 
