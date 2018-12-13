@@ -64,8 +64,20 @@ For the demand shift parts of the demand entities we have a positive shift and a
 The negative demand shift tells us how much demand is shifted away on this timestep.
 The positive demand shift tells us the opposite, how much demand is shifted to this timestep.
 So the negative demand shift will decrease the demand while the positive demand shift will increase the demand.
-If the negative demand shift of a home or commecial building is greater than 0, the positive demand shift has to stay 0 and vice versa.
+If the negative demand shift of a home or commecial building is greater than 0, the positive demand shift has to stay 0 and vice versa. Additionally, overall the demand has to stay the same. 
+This results in the following constraints:
 
+\begin{align} \label{eq:shift}
+\begin{split}
+\forall l \in H\cup C, \forall t \in T: (PposShift_{l}(t) > 0 \veebar PnegShift_{l}(t) > 0)\\ \vee (PposShift_{l}(t) = 0 \wedge PnegShift_{l}(t) = 0)
+\end{split}
+\end{align}
+For all consumers this constraints has to hold true:
+\begin{align} \label{eq:shiftSum}
+\begin{split}
+\forall t \in T: \sum\limits_{t\in T} PposShift(t) = \sum\limits_{t\in T} PnegShift(t)\\
+\end{split}
+\end{align}
 \textbf{Demand of batteries:}
 The third part calculates the demand of all batteries at a given timestep $t$.
 If we have more supply than demand, the solver can either export the unnecessarily produced energy to the main grid or store it in a battery for later use.
