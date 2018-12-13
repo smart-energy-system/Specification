@@ -140,7 +140,7 @@ To maximize the profit in a specified interval of timesteps $t \in T$ between th
 \max_{p \in P}{(\sum_{t=a}^{b}{((E(t)*price(t))-(I(t)*cost(t)))})}
 \end{equation}
 $P$ is th set of all possible decision configurations.
-$E(t)$ contains the energy export of timestep $t$ and $I(t)$ contains the energy import of timestep $t$.
+$E(t)$ contains the energy export (\textit{isEnergyExport} is true) of timestep $t$ and $I(t)$ (\textit{isEnergyImport} is true) contains the energy import of timestep $t$.
 These variable are depending on the decisions made by the optimizer on the equation for the balance in the microgrid of the exercises before. 
 All configurations from $P$ have to satisfy all the constraints. 
 The formula consists of two main parts. 
@@ -151,7 +151,10 @@ It consists of the total imported energy $I(t)$ multiplied by the cost for impor
 There are different possibilities to improve the total profit. 
 For example, one could sell energy at a high price. 
 Another possibility is to store energy if the price for selling is low. 
-For our simulation we use timesteps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in $Wh$ while the unit of all values of the previous equation is $Watt$.
+For our simulation we use timesteps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in $Wh$ while the unit of all values of the previous equation is $Watt$. The price for exporting energy and the cost for importing energy are provided as an array of constants.
+
+\subsection{Implementation}
+\input{./ImplementationSolver.tex}
 
 \subsection{Nomenclature Table}
 	\begin{longtable}{|c|p{.50\textwidth}|c|c|}
