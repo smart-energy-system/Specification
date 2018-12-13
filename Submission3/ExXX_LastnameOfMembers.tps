@@ -12,7 +12,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1362
-NormalPos.bottom=414
+NormalPos.bottom=388
 Class=LaTeXView
 Document=ExXX_LastnameOfMembers.tex
 
@@ -30,7 +30,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1362
-NormalPos.bottom=414
+NormalPos.bottom=388
 Class=LaTeXView
 Document=Implementation.tex
 
@@ -48,7 +48,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1362
-NormalPos.bottom=414
+NormalPos.bottom=388
 Class=LaTeXView
 Document=WeatherCollector.tex
 
@@ -66,7 +66,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1362
-NormalPos.bottom=414
+NormalPos.bottom=388
 Class=LaTeXView
 Document=..\Usepackage.tex
 
@@ -84,15 +84,33 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1362
-NormalPos.bottom=414
+NormalPos.bottom=388
 Class=BibTeXView
 Document=bibliography.bib
 
 [Frame4_View0,0]
-TopLine=47
+TopLine=48
 Cursor=1832
 
+[Frame5]
+Flags=0
+ShowCmd=1
+MinPos.x=-1
+MinPos.y=-1
+MaxPos.x=-1
+MaxPos.y=-1
+NormalPos.left=4
+NormalPos.top=26
+NormalPos.right=1362
+NormalPos.bottom=388
+Class=LaTeXView
+Document=A3.tex
+
+[Frame5_View0,0]
+TopLine=105
+Cursor=7287
+
 [SessionInfo]
-FrameCount=5
-ActiveFrame=3
+FrameCount=6
+ActiveFrame=5
 

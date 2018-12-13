@@ -7,7 +7,7 @@ We came up with the following equation:\\
 \\ + \sum_{c \in C}({P_{c}(t)} + PposShift_c(t) - PnegShift_c(t)) - \sum\limits_{b \in B}{Pd_{b}(t)}
 \end{split}
 \end{align}
-As one can see, for all time steps $t$ in the set of all time steps $T$ the equation has to hold true. 
+As one can see, for all timesteps $t$ in the set of all timesteps $T$ the equation has to hold true. 
 This is the constraint for the whole microgrid. 
 The left side of the equation represents the power supplied by the supplier ($P_{s}(t)$), the batteries ($P_{b}(t)$) and the import or export from the main grid ($P_{g}(t)$), the right side represents the consumers, which contains of homes ($P_{h}(t)$) and commercial buildings ($P_{c}(t)$), the batteries ($Pd_{b}(t)$) while charging. 
 On the right side, there are also the demand shift values for homes and commercial buildings.
@@ -20,18 +20,18 @@ If the change in the frequency exceeds a certain threshold suppliers and consume
 
 The supply side of the equation itself is compartmentalized into different factors which are explained in the following.
 
-\textbf{Wind turbines and solar panels:} On the supply side we have the sum the power in time step $t$ of all suppliers of the system (($P_{s}(t)$)), regardless of wind turbines or solar panels.
-We get those values from our model given data for the time step and weather conditions. 
+\textbf{Wind turbines and solar panels:} On the supply side we have the sum the power in timestep $t$ of all suppliers of the system (($P_{s}(t)$)), regardless of wind turbines or solar panels.
+We get those values from our model given data for the timestep and weather conditions. 
 Our software calculates demand forecast and supply forecast based on models of the supplier and consumers. 
 Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. 
 For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure \cite{NOAA}. 
 This equation is based on empirical data and helps us to incorporate the weather forecast in the wind supply forecast. 
 Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. 
 This supports reuse-ability of the solver and the models for it. 
-The forecast data is provided as an array of data which contains a value for each time step. 
+The forecast data is provided as an array of data which contains a value for each timestep. 
 The values represent the supply or demand and are measured in $Watts$.  %TODO Auf welche Einheit haben wir uns jetzt entschieden?
 
-\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given time step $t$. % TODO wiederholt sich das nicht von oben?
+\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$. % TODO wiederholt sich das nicht von oben?
 
 \textbf{Import and export to the main grid:} The connection to the main grid is resolved in the third part of the supply side of the equation.
 If we have more demand than supply, the solver will either use the energy stored in the battery or import energy from the main grid.
@@ -39,20 +39,20 @@ While the import of energy from the battery is already satisfied with the batter
 
 For the demand side, we chose a similar approach.
 
-\textbf{Demand from homes and commercial buildings:} The first one is the sum over all homes of a a given time step $t$ with related demand shift of every single home to calculate the total demand of all homes.
-The second one is the sum over all commecial buildings of a given time step $t$ with related demand shift of every single commecial building to calculate the total demand off all commecial buildings.
+\textbf{Demand from homes and commercial buildings:} The first one is the sum over all homes of a a given timestep $t$ with related demand shift of every single home to calculate the total demand of all homes.
+The second one is the sum over all commecial buildings of a given timestep $t$ with related demand shift of every single commecial building to calculate the total demand off all commecial buildings.
 Comparable to the supply forecast, the demand forecast is generated before the optimization step. 
 It is based on the demand profiles described in \cref{subsec:Demand}. 
 The demand of the homes is provided as an array of constants to the solver and measured in $Watts$. 
 Because the supply and the demand are provided as constants to the optimization component, we did not formulate any constraints for the supplier or the consumers.
 For the demand shift parts of the demand entities we have a positive shift and a negativ shift.
-The negative demand shift tells us how much demand is shifted away on this time step.
-The positive demand shift tells us the opposite, how much demand is shifted to this time step.
+The negative demand shift tells us how much demand is shifted away on this timestep.
+The positive demand shift tells us the opposite, how much demand is shifted to this timestep.
 So the negative demand shift will decrease the demand while the positive demand shift will increase the demand.
 If the negative demand shift of a home or commecial building is greater than 0, the positive demand shift has to stay 0 and vice versa.
 
 \textbf{Demand of batteries:}
-The third part calculates the demand of all batteries at a given time step $t$.
+The third part calculates the demand of all batteries at a given timestep $t$.
 If we have more supply than demand, the solver can either export the unnecessarily produced energy to the main grid or store it in a battery for later use.
 The storage of energy in the battery has a small loss of energy.
 
@@ -71,19 +71,20 @@ battery_{demand} = \sum\limits_{b\in B} Pd_{b}(t)\\
 
 There is also such an constraint for the shifting part to prohibit positive and negative shifting at the same time.
 
-We need to make an upper bound for the positive shifting which is 30\% of the house or commecial building demand.
-To make the solution space a bit smaller we considered to set the shifting value directly to 30\%.
-The constraint for the house shifting is shown in \Cref{eq:shiftingUpperBound},
+We need to make an upper bound for the positive shifting which a user can provide for the house or commecial building demand, e.g. 30\%.
+The constraint for the house shifting is shown in \Cref{eq:shiftingUpperBound}.
 The constraint for the commecial building is the same.
 \begin{align} \label{eq:shiftingUpperBound}
 \begin{split}
-PposShift_h(t) = \cfrac{P_{h}(t) * 30}{100}
+PposShift_h(t) = \cfrac{P_{h}(t) * n}{100}
 \end{split}
 \end{align}
 
-
-Since our optimiser is not strong enough to solve variable shifting for every time step, we decided to allow the optimiser only to shift one time for a home with the constraints shown in \Cref{eq:numberOfShifts}.
+There are two possiblilities for shifting demand which can be chosen by a user.
+The first one is used if the optimizer is not strong enough to solve variable shifting for every timestep.
+In this version, we allow the optimizer to shift one time for a home with the constraints shown in \Cref{eq:numberOfShifts}.
 We did the same for the commecial buildings.
+The second version allows variable shifting for every timestep.
 \begin{align} \label{eq:numberOfShifts}
 \begin{split}
 \forall h \in H: sumOfPosShifts_{h} = \sum\limits_{t = 0}^{t_{max}} PposShift_h(t)\\
@@ -93,49 +94,69 @@ sumOfPosShifts_{h} \leq 1
 
 The sum of negative shifting is set equals the sum of positiv shifting to build the balance between them.
 In addition to this, the $PnegShift_h(t)$ has to be less or equals than 1 too.
-So every building can shift at maximum once 30\% of their demand to another time step.
-
-
-TODO
+So every building can shift at maximum once  n\% of their demand to another timestep.
 
 \subsection{Objective of the optimization problem}
 We import or export energy from the main grid with $P_{g}(t)$.
 If $P_{g}(t) < 0$ than energy will be exported since the overall supply gets less than only with the batteries and renewable supplier.
 If $P_{g}(t) > 0$ than energy will be imported since the overall supply gets more than only with the batteries and renewable supplier.
-We can use this later to computer our profit or loss.
+We can use this to compute our profit or loss since we want the optimizer to maximize the profit.
+To compute profit and loss we declared two variables $isEnergyImport$ and $isEnergyExport$ as shown in \Cref{eq:importexport}.
+\begin{align} \label{eq:importexport}
+\begin{split}
+P_{g}(t) < 0 \Rightarrow isEnergyImport\\
+P_{g}(t) > 0 \Rightarrow isEnergyExport
+\end{split}
+\end{align}
+If $isEnergyImport$ is true, the optimizer will use the absolut value of $P_{g}$ as import.
+In this case the export will be zero for timestep $t$.
+If $isEnergyExport$ is true, it's the other way round.
 
-To maximize the profit in a specified interval of timesteps $t \in T$ between the time steps $a \in T$ and $b \in T$ we propose the following function:\\
+
+To maximize the profit in a specified interval of timesteps $t \in T$ between the timesteps $a \in T$ and $b \in T$ we propose the following function:
 \begin{equation} \label{eq:opt}
 \max_{p \in P}{(\sum_{t=a}^{b}{((E(t)*price(t))-(I(t)*cost(t)))})}
 \end{equation}
-Where P is th set of all possible decision configurations. $E(t)$ and $I(t)$ are depending on the decisions made and on the equation for the balance in the microgrid of the exercises before. All configurations from P have to satisfy all the constraints. The formula consists of two main parts. The minuend in the sum calculates the profit for exporting energy to the main grid for these time step. For this calculation, the total energy export $E(t)$ for this time step is multiplied by the price for the energy. The subtrahend in the sum expresses the cost for importing energy from the main grid. It consists of the total imported energy $I(t)$ multiplied by the cost for importing energy at this time step. There are different possibilities to improve the total profit. For example, one could sell energy at a high price. Another possibility is to store energy if the price for selling is low. For our simulation we use time steps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in Wh while the unit of all values of the previous equation is Watt.
+$P$ is th set of all possible decision configurations.
+$E(t)$ contains the energy export of timestep $t$ and $I(t)$ contains the energy import of timestep $t$.
+These variable are depending on the decisions made by the optimizer on the equation for the balance in the microgrid of the exercises before. 
+All configurations from $P$ have to satisfy all the constraints. 
+The formula consists of two main parts. 
+The minuend in the sum calculates the profit for exporting energy to the main grid for these timestep. 
+For this calculation, the total energy export $E(t)$ for this timestep is multiplied by the price for the energy. 
+The subtrahend in the sum expresses the cost for importing energy from the main grid. 
+It consists of the total imported energy $I(t)$ multiplied by the cost for importing energy at this timestep. 
+There are different possibilities to improve the total profit. 
+For example, one could sell energy at a high price. 
+Another possibility is to store energy if the price for selling is low. 
+For our simulation we use timesteps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in $Wh$ while the unit of all values of the previous equation is $Watt$.
 
 \subsection{Nomenclature Table}
 	\begin{longtable}{|c|p{.50\textwidth}|c|c|}
 		\toprule
 		\textbf{Symbol} & \textbf{Description} & \textbf{Unit} & \textbf{Equation} \\ \midrule
-		T & The set of all time steps. The step width is 1h and usually 24 steps are used. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
+		T & The set of all timesteps. The step width is 1h and usually 24 steps are used. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
 		t & A single step from the set T. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
 		S & The set of all suppliers (Different wind turbines, solar panels...). & Watt & \Cref{eq1:balance} \\ \midrule
 		s & A single supplier from the set S. & & \Cref{eq1:balance} \\ \midrule
-		$P_{s}(t)$ & The energy supply from a single supplier for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{s}(t)$ & The energy supply from a single supplier for the specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
 		B & The set of all batteries. & & \Cref{eq1:balance} \\ \midrule
 		b & A single battery. & & \Cref{eq1:balance} \\ \midrule
-		$P_{s}(t)$ & The energy supply from a single battery for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$P_{g}(t)$ & The energy supply from the main grid for the specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{s}(t)$ & The energy supply from a single battery for the specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{g}(t)$ & The energy supply from the main grid for the specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
 		D & The set of all consumers (Homes, commercial buildings) & & \Cref{eq1:balance} \\ \midrule
 		d & A single consumer from the set D & & \Cref{eq1:balance} \\ \midrule
-		$P_{d}(t)$ & The energy demand for a single consumer at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$P_{b}(t)$ & The energy demand for a single battery at a specific time step t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$Pd_{g}(t)$ & The energy exported by the microgrid to the main grid at a specific time step t. & Watt & \Cref{eq1:balance} \\
+		$P_{d}(t)$ & The energy demand for a single consumer at a specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$P_{b}(t)$ & The energy demand for a single battery at a specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
+		$Pd_{g}(t)$ & The energy exported by the microgrid to the main grid at a specific timestep t. & Watt & \Cref{eq1:balance} \\
 		P & The set of all possible configurations &  & \Cref{eq:opt} \\ \midrule
 		p & A single configuration &  & \Cref{eq:opt} \\ \midrule
-		a & A single step form the set T. It marks the first time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
-		b & A single step form the set T. It marks the last time step of the optimization & Hour & \Cref{eq:opt} \\ \midrule
-		E(t) & The total energy exported to the main grid for a specific time step t. & Wh & \Cref{eq:opt} \\ \midrule
-		I(t) & The total energy imported from the main grid for a specific time step t. & Wh & \Cref{eq:opt} \\ \midrule
-		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific time step t. & Cent per Wh & \Cref{eq:opt} \\ \midrule
-		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific time step t. & Cent per Wh& \Cref{eq:opt} \\
+		a & A single step form the set T. It marks the first timestep of the optimization & Hour & \Cref{eq:opt} \\ \midrule
+		b & A single step form the set T. It marks the last timestep of the optimization & Hour & \Cref{eq:opt} \\ \midrule
+		E(t) & The total energy exported to the main grid for a specific timestep t. & Wh & \Cref{eq:opt} \\ \midrule
+		I(t) & The total energy imported from the main grid for a specific timestep t. & Wh & \Cref{eq:opt} \\ \midrule
+		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific timestep t. & Cent per Wh & \Cref{eq:opt} \\ \midrule
+		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific timestep t. & Cent per Wh& \Cref{eq:opt} \\
 		\bottomrule
 			\caption[Nomenclature Table]{Describes every Symbol}
 		\label{tab:Ergebnisse}
