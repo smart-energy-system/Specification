@@ -31,7 +31,7 @@ This supports reuse-ability of the solver and the models for it.
 The forecast data is provided as an array of data which contains a value for each timestep. 
 The values represent the supply or demand and are measured in $Watts$.  %TODO Auf welche Einheit haben wir uns jetzt entschieden?
 
-\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$.  Each battery has a fill level for each timestep. It holds the information how much charge is stored in the battery at each step. This results in the following constraints. Additionally, there is a limit on the charge and the discharge rate.
+\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$.  Each battery has a fill level for each timestep. It holds the information how much charge is stored in the battery at each step. This results in the following constraints. Additionally, there is a limit on the charge and the discharge rate. Also there is a limit on the fillLevel, because batteries can not hold an infinite amount of energy.
 \begin{align} \label{eq:limitDischarge}
 \begin{split}
 \forall b \in B, \forall t \in T: P_{b}(t) < maxDischargeRate_{b}
@@ -40,6 +40,11 @@ The values represent the supply or demand and are measured in $Watts$.  %TODO Au
 \begin{align} \label{eq:discharge100}
 \begin{split}
 \forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - Pd_{b}(t) * 1h
+\end{split}
+\end{align}
+\begin{align} \label{eq:maxlimit}
+\begin{split}
+\forall b \in B, \forall t \in T: fillLevel_{b}(t) \le maxFillLevel_{b}
 \end{split}
 \end{align}
  % TODO wiederholt sich das nicht von oben?
@@ -189,6 +194,7 @@ Both variants reduce the profit to be more independent from the main grid. We im
 		$n_{l}$ & A user defined number which defines how much percent of the demand of the consumer l can be shifted. & 1 \\ \midrule
 		$numberOfShifts_{l}$ & The number of occurred shifts for one consumer l. & 1 \\ \midrule
 		$maxChargeRate_{b}$ & The maximal rate at which it is possible to discharge the battery b. & Watt \\ \midrule
+		$maxFillLevel_{b}$ & The maximal charge the battery b is able to store. & Wh\\ \midrule
 		$chargeEfficiency_{b}$ & The user defined efficiency for charging the battery b. & 1 \\ \midrule
 		$isEnergyImport(t)$ & Boolean variable which is true if energy is imported  at a specific timestep t.&  \\ \midrule
 		$isEnergyExport(t)$ & Boolean variable which is true if energy is exported  at a specific timestep t.&  \\ \midrule
