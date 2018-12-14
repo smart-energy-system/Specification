@@ -152,6 +152,11 @@ There are different possibilities to improve the total profit.
 For example, one could sell energy at a high price. 
 Another possibility is to store energy if the price for selling is low. 
 For our simulation we use timesteps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in $Wh$ while the unit of all values of the previous equation is $Watt$. The price for exporting energy and the cost for importing energy are provided as an array of constants.
+This solution maximizes the total profit at all costs. Usually this means it also minimizes the import form the main grid, because importing energy results in costs. But sometimes it can happen that importing energy at a low price, storing it in batteries and selling it later is the most profitable solution. We chose to optimize for the most profit but sometimes other objectives could be important to. Maybe one wants to go easy on his batteries or wants to me as independent form the main grid as possible. To enable this variant we propose two solutions. The first one computes a pareto front with the two objectives \textit{maximal profit} and \textit{minimal import}. All possible solutions are presented to the user.
+The other way is to prohibit that the battery gets charged if the import form the main grid is not zero. This constraint would realize this $Pg(t) > 0 \Rightarrow Pdb(t) = 0$.
+In this case the optimizer is only allowed to import energy from the main grid to balance the demand, not to load the battery.
+Both variants reduce the profit to be more independent from the main grid. We implemented the most profitable solution.
+
 
 \subsection{Implementation}
 \input{./ImplementationSolver.tex}
