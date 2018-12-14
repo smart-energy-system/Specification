@@ -39,7 +39,7 @@ The values represent the supply or demand and are measured in $Watts$.  %TODO Au
 \end{align}
 \begin{align} \label{eq:discharge100}
 \begin{split}
-\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - Pd_{b}(t)
+\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - Pd_{b}(t) * 1h
 \end{split}
 \end{align}
  % TODO wiederholt sich das nicht von oben?
@@ -86,7 +86,7 @@ For this constraint n is provided by the user.\\
 There are two possibilities for shifting demand which can be chosen by a user. The first one is used if the user wants to save time or has limited RAM. This variant allows only one shift per supplier. For example form 30\% of the load form 9 o'clock to 10 o'clock. This variant uses the constraint form \Cref{eq:numberOfShifts}. The second variant allows to shift form every hour to every other hour. This results depending on the input and the number of time steps in a very long run-time and a high RAM consumption.
 \begin{align} \label{eq:numberOfShifts}
 \begin{split}
-\forall l \in H\cup C: numberOfShifts_{h} \leq 1
+\forall l \in H\cup C: numberOfShifts_{l} \leq 1
 \end{split}
 \end{align}
 
@@ -101,7 +101,7 @@ The storage of energy in the battery has a small loss of energy.
 \end{align}
 \begin{align} \label{eq:effi}
 \begin{split}
-\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - \left( \cfrac{Pd_{b}(t)*chargeEfficiency_b}{100}\right)
+\forall b \in B, \forall t \in T: fillLevel_{b}(t+1) = fillLevel_{b}(t) - \left( \cfrac{Pd_{b}(t)*chargeEfficiency_b * 1h}{100}\right)
 \end{split}
 \end{align}
 
@@ -126,8 +126,8 @@ We can use this to compute our profit or loss since we want the optimizer to max
 To compute profit and loss we declared two variables $isEnergyImport$ and $isEnergyExport$ as shown in \Cref{eq:importexport}.
 \begin{align} \label{eq:importexport}
 \begin{split}
-P_{g}(t) < 0 \Rightarrow isEnergyImport\\
-P_{g}(t) > 0 \Rightarrow isEnergyExport
+P_{g}(t) < 0 \Rightarrow isEnergyImport(t)\\
+P_{g}(t) > 0 \Rightarrow isEnergyExport(t)
 \end{split}
 \end{align}
 If $isEnergyImport$ is true, the optimizer will use the absolut value of $P_{g}$ as import.
@@ -162,31 +162,46 @@ Both variants reduce the profit to be more independent from the main grid. We im
 \input{./ImplementationSolver.tex}
 
 \subsection{Nomenclature Table}
-	\begin{longtable}{|c|p{.50\textwidth}|c|c|}
+	\begin{longtable}{|c|p{.50\textwidth}|c|}
 		\toprule
-		\textbf{Symbol} & \textbf{Description} & \textbf{Unit} & \textbf{Equation} \\ \midrule
-		T & The set of all timesteps. The step width is 1h and usually 24 steps are used. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
-		t & A single step from the set T. & Hour & \Cref{eq1:balance,eq:opt} \\ \midrule
-		S & The set of all suppliers (Different wind turbines, solar panels...). & Watt & \Cref{eq1:balance} \\ \midrule
-		s & A single supplier from the set S. & & \Cref{eq1:balance} \\ \midrule
-		$P_{s}(t)$ & The energy supply from a single supplier for the specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
-		B & The set of all batteries. & & \Cref{eq1:balance} \\ \midrule
-		b & A single battery. & & \Cref{eq1:balance} \\ \midrule
-		$P_{s}(t)$ & The energy supply from a single battery for the specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$P_{g}(t)$ & The energy supply from the main grid for the specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
-		D & The set of all consumers (Homes, commercial buildings) & & \Cref{eq1:balance} \\ \midrule
-		d & A single consumer from the set D & & \Cref{eq1:balance} \\ \midrule
-		$P_{d}(t)$ & The energy demand for a single consumer at a specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$P_{b}(t)$ & The energy demand for a single battery at a specific timestep t. & Watt & \Cref{eq1:balance} \\ \midrule
-		$Pd_{g}(t)$ & The energy exported by the microgrid to the main grid at a specific timestep t. & Watt & \Cref{eq1:balance} \\
-		P & The set of all possible configurations &  & \Cref{eq:opt} \\ \midrule
-		p & A single configuration &  & \Cref{eq:opt} \\ \midrule
-		a & A single step form the set T. It marks the first timestep of the optimization & Hour & \Cref{eq:opt} \\ \midrule
-		b & A single step form the set T. It marks the last timestep of the optimization & Hour & \Cref{eq:opt} \\ \midrule
-		E(t) & The total energy exported to the main grid for a specific timestep t. & Wh & \Cref{eq:opt} \\ \midrule
-		I(t) & The total energy imported from the main grid for a specific timestep t. & Wh & \Cref{eq:opt} \\ \midrule
-		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific timestep t. & Cent per Wh & \Cref{eq:opt} \\ \midrule
-		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific timestep t. & Cent per Wh& \Cref{eq:opt} \\
+		\textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\ \midrule
+		T & The set of all timesteps. The step width is 1h and usually 24 steps are used. & Hour \\ \midrule
+		t & A single step from the set T. & Hour \\ \midrule
+		S & The set of all suppliers (Different wind turbines, solar panels...). & Watt \\ \midrule
+		s & A single supplier from the set S. & \\ \midrule
+		$P_{s}(t)$ & The energy supply from a single supplier for the specific timestep t. & Watt\\ \midrule
+		B & The set of all batteries. & \\ \midrule
+		b & A single battery. & \\ \midrule
+		$P_{s}(t)$ & The energy supply from a single battery for the specific timestep t. & Watt \\ \midrule
+		$P_{g}(t)$ & The energy supply from the main grid for the specific timestep t. & Watt \\ \midrule
+		H & The set of all homes & \\ \midrule
+		h & A single home from the set H & \\ \midrule
+		$P_{h}(t)$ & The energy demand for a single home at a specific timestep t. & \\ \midrule
+		C & The set of all commercial buildings & \\ \midrule
+		c & A single commercial building from the set C & \\ \midrule
+		$P_{c}(t)$ & The energy demand for a single commercial building at a specific timestep t. & \\ \midrule
+		$P_{b}(t)$ & The energy supply from a single battery at a specific timestep t. & Watt \\ \midrule
+		$Pd_{b}(t)$ & The energy demand from a single battery at a specific timestep t. & Watt \\ \midrule
+		$PposShift_{h}(t)$ \& $PposShift_{c}(t)$ & The demand flexibility (in positive direction) for the consumer at specific timestep t. & Watt \\ \midrule
+		$PnegShift_{h}(t)$ \& $PnegShift_{c}(t)$ & The demand flexibility (in negative direction) for the consumer at specific timestep t. & Watt \\ \midrule
+		$maxDischargeRate_{b}$ & The maximal rate at which it is possible to discharge the battery b & Watt \\ \midrule
+		$fillLevel{b}(t)$ & Represents the amount of energy stored in battery b at the timestep t & Wh \\ \midrule
+		$l$ & A single consumer from the set $H\cup C$ & \\ \midrule
+		$P_{l}(t)$ & The energy demand from a single consumer from the set $H\cup C$ at a specific timestep t. & Watt \\ \midrule
+		$n$ & A user defined number which defines how much percent of the demand can be shifted & 1 \\ \midrule
+		$numberOfShifts_{l}$ & The number of occurred shifts for one consumer l & 1 \\ \midrule
+		$maxChargeRate_{b}$ & The maximal rate at which it is possible to discharge the battery b & Watt \\ \midrule
+		$chargeEfficiency_{b}$ & The user defined efficiency for charging a battery & 1 \\ \midrule
+		$isEnergyImport(t)$ & Boolean variable which is true if energy is imported  at a specific timestep t&  \\ \midrule
+		$isEnergyExport(t)$ & Boolean variable which is true if energy is exported  at a specific timestep t&  \\ \midrule
+		P & The set of all possible configurations &  \\ \midrule
+		p & A single configuration &  \\ \midrule
+		a & A single step form the set T. It marks the first timestep of the optimization & Hour \\ \midrule
+		b & A single step form the set T. It marks the last timestep of the optimization & Hour \\ \midrule
+		E(t) & The total energy exported to the main grid for a specific timestep t. & Wh \\ \midrule
+		I(t) & The total energy imported from the main grid for a specific timestep t. & Wh  \\ \midrule
+		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific timestep t. & Cent per Wh \\ \midrule
+		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific timestep t. & Cent per W \\
 		\bottomrule
 			\caption[Nomenclature Table]{Describes every Symbol}
 		\label{tab:Ergebnisse}
