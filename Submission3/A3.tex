@@ -4,7 +4,7 @@ We came up with the following equation:\\
 \begin{align} \label{eq1:balance}
 \begin{split}
 \forall t \in T: \sum\limits_{s \in S}{P_{s}(t)} + \sum\limits_{b \in B}{P_{b}(t)} + P_{g}(t) = \sum_{h \in H}({P_{h}(t)} + PposShift_h(t) - PnegShift_h(t))
-\\ + \sum_{c \in C}({P_{c}(t)} + PposShift_c(t) - PnegShift_c(t)) - \sum\limits_{b \in B}{Pd_{b}(t)}
+\\ + \sum_{c \in C}({P_{c}(t)} + PposShift_c(t) - PnegShift_c(t)) + \sum\limits_{b \in B}{Pd_{b}(t)}
 \end{split}
 \end{align}
 As one can see, for all timesteps $t$ in the set of all timesteps $T$ the equation has to hold true. 
