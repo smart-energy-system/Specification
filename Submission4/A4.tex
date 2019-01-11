@@ -1,0 +1,34 @@
+This section contains information about the dynamic pricing component.
+The component fetches day -ahead prices for the german market and provides these
+information to the main system.
+
+\subsection{Day-ahead market service}
+
+We considered multiple different sources for your the price information. 
+\cref{tab:Ergebnisse} 
+
+
+\begin{table}[htbp]
+	\centering
+	\begin{tabularx}{\textwidth}{ LLL }
+		\toprule
+		Source & Pro & Con \\\midrule
+		\url{epexspot.com} &\tabitem Website moderate difficult to parse &\tabitem API not free \cite{epexspot} \\
+		& \tabitem Lot of useful explanations &\tabitem Not clear if the terms and conditions allow parsing \cite{epexspot}\\\rule{0pt}{4ex} 
+	    \url{nordpoolgroup.com}	& \tabitem lot of nordic countries &\tabitem No day-ahead prices for Germany \cite{nord}\\
+	    &  &\tabitem You need to be a customer to use the API \cite{nord}\\
+			&  &\tabitem harder to parse\\
+				&  &\tabitem automatic data extraction not allowed in terms and conditions \cite{nord2}\\\rule{0pt}{4ex} 
+	    \url{smard.de}	& \tabitem Website moderate difficult to parse &\tabitem No API\\
+	    	& \tabitem data licensed under CC BY 4.0 \cite{Bundesnetzagentur}&\tabitem Support discourages parsing of the website\\
+	    	& \tabitem fast support \cite{Bundesnetzagentur}& \\\rule{0pt}{4ex} 
+	    \url{dataminer2.pjm.com}	& \tabitem API available \cite{dataminer} &\tabitem Does not provide data for Germany \cite{dataminer}\\
+	    	    	&  &\tabitem API requires an accoun t\cite{dataminer}\\\rule{0pt}{4ex} 
+	   \url{transparency.entsoe.eu}	& \tabitem has an free API \cite{ENTSO} &\tabitem API parameters use non standard formats\\
+	   & \tabitem Has data for Germany & \\
+	   & \tabitem Terms and conditions allow free usage of data \cite{ENTSO2} & \\
+		\bottomrule
+	\end{tabularx}
+	\caption[Beispieltabelle]{Beispieltabelle -- siehe \url{http://www.ctan.org/tex-archive/info/german/tabsatz/}}
+	\label{tab:Ergebnisse}
+\end{table}
