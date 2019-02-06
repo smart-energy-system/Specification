@@ -1,0 +1,42 @@
+The power girds of the future will be different from the existing ones. More information will be used to make better decisions, more renewable energy sources will be integrated and more automation will happen.
+Also, microgrids will be a part of the energy concepts of the future.
+The simulation system presented in this report could help to gain a better understanding about different aspects of microgirds. 
+The first section provides a motivation and introduction to microgirds. 
+The next section contains basic information which are necessary to understand the problem, the functional requirements and an architecture description.
+The architecture is split in three layers. 
+The webfrontend, the logic layer which contains the simulation and the database layer.
+It also features a reliable approach to integrate an external weather component.
+In addition to this, there is a service to collect day-ahead energy prices to optimize the smart grid in regard to minimal energy costs. 
+\Cref{sec:Implementation} contains a description of our implementation.
+\Cref{sec:DemandResponse} provides a description of the optimization problem which has to be solved in order to find the best solution possible for the micogrid. 
+This solution describes when it is profitable to charge batteries, when to shift the demand.
+The dynamic pricing is described in \cref{sec:DynamicPricing }.
+In \cref{sec:frontend} we described the user frontend, especially which kinds of charts we supply to show a user in a compact manner all information he needs to analyse his smart grid.
+
+To summerize we built a smart energy system to simulate smart grids.
+The system is built modular to allow easy extendability with new features, e.g. a new kind of supplier.
+Using real weather data for specific locations the system can compute the energy produced by the supplier.
+Using this data and simulating consumer and batteries, in addition to energy prices for DE-LU bidding zone, the system can solve a optimization problem to balance out supply and consume regarding to minimize energy costs.
+The data is shown to the user in a compact dashboard in an angular app component, where he can also create supplier, consumer and batteries.
+
+\subsection{Outlook}
+The system supports at the current state only wind turbines and photovoltaic pannels as supplier and on the consumer side normal houses and commercial buildings.
+Due to the modularity of the system would is possible to add additional kinds of supplier or consumer to the system in the future.
+
+A big problem is the small computation power of the used choco solver.
+We can only solve the balancing problem for one entity of each supplier, consumer and one battery in a time interval of 4 hours.
+Using more data ends up in computing to long or a stack overflow in the solver.
+A good improvement for the system would be to implement a stronger optimization solver, possibly in another programming language and invoke it from the main component to compute with more data.
+Since the rest of our system already supports multiple entities of supplier, consumer and batteries this change could be easily made, assumed a stronger solver exists.
+
+A user can create entities using a the Opensteetmap component for angular.
+It's possible to add them everywhere in the world.
+Unfortunately we only use the DE-LU bidding zone at the moment.
+Simulating a smart grid e.g. in China with german bidding zone for enegy prices would not make much sense.
+Therefore the system should be changed to collect dynamicly energy prices for any bidding zone in the world, regarding the location of the consumer. 
+
+Showing the supplier, consumer and batteries in the map would make it possible also do add some connectors between to simulate e.g. power cables.
+
+There are several possibilities to improve our smart energy system in a future work.
+We published the project on GitHub under MIT licence to allow developers to extend the system, e.g. with pull requests.
+In our opinion the choco solver is the biggest problem of the current system and should be replaced first before adding additional features.
