@@ -26,14 +26,15 @@ Due to the modularity of the system would is possible to add additional kinds of
 A big problem is the small computation power of the used choco solver.
 We can only solve the balancing problem for one entity of each supplier, consumer and one battery in a time interval of 4 hours.
 Using more data ends up in computing to long or a stack overflow in the solver.
+To ease problem a bit, we concatenate supplier and consumer before giving the data to the solver.
 A good improvement for the system would be to implement a stronger optimization solver, possibly in another programming language and invoke it from the main component to compute with more data.
-Since the rest of our system already supports multiple entities of supplier, consumer and batteries this change could be easily made, assumed a stronger solver exists.
+Since the rest of our system already supports multiple entities of supplier, consumer and batteries this change could be easily made, assuming a stronger solver exists.
 
-A user can create entities using a the Opensteetmap component for angular.
+A user can create entities using the Opensteetmap component for angular.
 It's possible to add them everywhere in the world.
 Unfortunately we only use the DE-LU bidding zone at the moment.
-Simulating a smart grid e.g. in China with german bidding zone for enegy prices would not make much sense.
-Therefore the system should be changed to collect dynamicly energy prices for any bidding zone in the world, regarding the location of the consumer. 
+Simulating a smart grid e.g. in China with German bidding zone for energy prices would not make much sense.
+Therefore the system should be changed to collect dynamically energy prices for any bidding zone in the world, regarding the location of the consumer.
 
 Showing the supplier, consumer and batteries in the map would make it possible also do add some connectors between to simulate e.g. power cables.
 

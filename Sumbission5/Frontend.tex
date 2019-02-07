@@ -9,6 +9,13 @@ The views are decribed in the following subsections.
 In the Supplier view the user can create, delete or manage supplier.
 Creating, delete or manage consumer works equivalent so we will explain it only for supplier.
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=1.00\textwidth]{../figures/supplierView.PNG}
+    \caption{View to create, delete or manage suppliers}
+    \label{fig:suppliers}
+\end{figure}
+
 The interface for suppliers is shown in \cref{fig:suppliers}.
 In the left side there is a navigation bar which shows all created supplier.
 A user can add a new one using the \textit{plus} button under the suppliers, delete a specific supplier using the \textit{bin} button right to the supplier or manage the supplier clicking on it.
@@ -22,13 +29,6 @@ Once created a supplier, it available in the navigation bar at the right.
 Clicking on it shows all data already filled in the form and allows the user to change it during run time.
 
 
-\begin{figure}[!h]
-    \centering
-    TODO%\includegraphics{}
-    \caption{View to create, delete or manage suppliers}
-    \label{fig:suppliers}
-\end{figure}
-
 \subsection{Batteries}
 The batteries view is shown in \cref{fig:batteries}.
 On the left side of the page there is the same kind of navigation bar we also used in the supplier and consumer pages to create, delete and manage batteries.
@@ -38,11 +38,10 @@ The position can either set directly through the form or just like in the suppli
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=1.00\textwidth]{../figures/batteries.PNG}
+    \includegraphics[width=1.00\textwidth]{../figures/batteriesView.PNG}
     \caption{View to create, delete or manage batteries}
     \label{fig:batteries}
 \end{figure}
-
 
 
 \subsection{Prices}
@@ -52,7 +51,7 @@ The page is shown in \cref{fig:prices}.
 
 \begin{figure}[!h]
     \centering
-    TODO%\includegraphics{}
+\includegraphics[width=1.00\textwidth]{../figures/prices.PNG}
     \caption{View show energy prices for specific time interval}
     \label{fig:prices}
 \end{figure}
@@ -60,22 +59,40 @@ The page is shown in \cref{fig:prices}.
 \subsection{Dashboard}
 The most interesting view is the dashboard.
 Here the user can take a look easily at different kinds of information in a compact manner.
-The view is divided in two parts as shown in \cref{fig:dashboard}.
+The view shows supply, demand and other information in a chart, as shown in \cref{fig:dashboard}
 
 \begin{figure}[!h]
     \centering
-    TODO%\includegraphics{}
-    \caption{Dashboard view to show several kind of charts}
+\includegraphics[width=1.00\textwidth]{../figures/Overview.png}
+    \caption{Dashboard view to show the charts}
     \label{fig:dashboard}
 \end{figure}
 
-On the left side, the user can choose between the kinds of charts to get the chart he wants which is shown directly below.
-On the right side the user can select the data which should be used in the chart.
-Using the radiobuttons, the user can switch between \textit{All Demand and Supply}, \textit{All Demand}, \textit{All Supply} and \textit{Custom}, where he can choose each specific kind of data.
-So it's possible for example to select wind turbines and homes to take a look if wind turbines can supply homes on their own.
-In addition to this, we provide several templates the user can choose from.
-Templates are predefined selections of data which are most likely interesting for a user, so he need less clicks to get the information he wants.
-Which kind of charts the system currently supply is described in \cref{sec:charts}.
+Clicking on the data in the legend in the right part of the chart allows the user to disable or enable data in the chart.
+This makes the chart more clear and allows the user to concentrate better on the information he is interested in.
+\Cref{fig:consumerChart} shows a chart containing only the consumers.
 
-\subsection{Charts}\label{sec:charts}
-Todo, describe kind of charts
+\begin{figure}[!h]
+    \centering
+\includegraphics[width=1.00\textwidth]{../figures/ConsumerStacked.png}
+    \caption{Chart showing only the energy demand of the consumers}
+    \label{fig:consumerChart}
+\end{figure}
+
+If a user is interested only in the energy produced by the supplier, he can select only the supplier as shown in \cref{fig:supplierChart}.
+
+\begin{figure}[!h]
+    \centering
+\includegraphics[width=1.00\textwidth]{../figures/SupplierStacked.png}
+    \caption{Chart showing only the energy produced by the supplier}
+    \label{fig:supplierChart}
+\end{figure}
+
+Using the buttons under the chart switches between several charts.
+We provide a logarithmic view or normal view.
+In addition to this, we can show the user 5 days history or forecast.
+
+For kind of charts we chose to support stacked charts and normal charts.
+In stacked charts the values can be stacked above each others.
+In  \cref{fig:supplierChart} a stacked chart is used, where the supply of the supplier \textit{Office} added above the supplier \textit{Home}.
+\Cref{fig:dashboard} shows a normal chart.
