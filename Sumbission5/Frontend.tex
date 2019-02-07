@@ -1,9 +1,10 @@
 \section{Frontend}\label{sec:frontend}
 The following section describes our user frontend and especially how we show data to the user in a compact manner.
-The frontend is written in Angular using Angular Material library.
+The frontend is written in Angular with Typescript using Angular Material, Chart.js, Moments.js and C3 libraries.
 We devided the frontend in 5 parts.
-The user can choose in a navigation bar between \textit{Dashboard}, \textit{Supplier}, \textit{Consumer}, \textit{Batteries} and \textit{Prices} view.
-The views are decribed in the following subsections.
+The user can choose in a navigation bar between \textit{Dashboard},
+\textit{Solver}, \textit{Supplier}, \textit{Consumer}, \textit{Batteries} and \textit{Prices} view.
+The views are described in the following subsections.
 
 \subsection{Supplier and Consumer}
 In the Supplier view the user can create, delete or manage supplier.
@@ -19,11 +20,11 @@ Creating, delete or manage consumer works equivalent so we will explain it only 
 The interface for suppliers is shown in \cref{fig:suppliers}.
 In the left side there is a navigation bar which shows all created supplier.
 A user can add a new one using the \textit{plus} button under the suppliers, delete a specific supplier using the \textit{bin} button right to the supplier or manage the supplier clicking on it.
-The main part of this page is the form with the user given data such as latitute, longitute or additional supplier specific needed data, e.g. rotator radius for wind turbines.
+The main part of this page is the form with the user given data such as latitude, longitude or additional supplier specific needed data, e.g. rotator radius for wind turbines.
 The kind of supplier can be chosen with the radio button above the form.
 Due to angulars modularity it's easy to add more kinds of supplier in the future.
 Next to the form is a map using angular leaflet openstreetmap API.
-The nice part is that a user does not need to know the specific latitute or longitute to create supplier.
+The nice part is that a user does not need to know the specific latitude or longitude to create supplier.
 Clicking on the map adds a location point which can be exported easily to the form which allows the user to create suppliers at a specific place in the map.
 Once created a supplier, it available in the navigation bar at the right.
 Clicking on it shows all data already filled in the form and allows the user to change it during run time.
@@ -96,3 +97,17 @@ For kind of charts we chose to support stacked charts and normal charts.
 In stacked charts the values can be stacked above each others.
 In  \cref{fig:supplierChart} a stacked chart is used, where the supply of the supplier \textit{Office} added above the supplier \textit{Home}.
 \Cref{fig:dashboard} shows a normal chart.
+
+\subsection{Solver}\label{sec:solver}
+In the solver view the user can see the steps of the solver in three possible ways.
+The first way is to show the steps in a chart.
+There is also the possibility to show a textual description of the steps.
+The third way is to show the solver steps as table, which is shown in \cref{fig:solverTable}.
+Under the table, chart or text there is always a summary of the costs and profit of the system.
+
+\begin{figure}[!h]
+    \centering
+\includegraphics[width=1.00\textwidth]{../figures/SolverTable.png}
+    \caption{Table view of solver steps}
+    \label{fig:solverTable}
+\end{figure}

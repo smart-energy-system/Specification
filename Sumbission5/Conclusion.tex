@@ -19,6 +19,11 @@ Using real weather data for specific locations the system can compute the energy
 Using this data and simulating consumer and batteries, in addition to energy prices for DE-LU bidding zone, the system can solve a optimization problem to balance out supply and consume regarding to minimize energy costs.
 The data is shown to the user in a compact dashboard in an angular app component, where he can also create supplier, consumer and batteries.
 
+In our implementations we used for the frontend Angular with Typescript, Angular Material, Charts.js, Moments.js and C3.
+The WeatherCollectorService is written in NodeJS express with ECMAScript 6 features.
+The main component and the PriceCollectorService are written in Java SpringBoot.
+All components are written modulary to support a good expandability. 
+
 \subsection{Outlook}
 The system supports at the current state only wind turbines and photovoltaic pannels as supplier and on the consumer side normal houses and commercial buildings.
 Due to the modularity of the system would is possible to add additional kinds of supplier or consumer to the system in the future.

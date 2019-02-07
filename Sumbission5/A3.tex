@@ -1,5 +1,5 @@
-\subsection{Balance within the microgrid}
-To guarantee the balance in the microgrid as defined in the slides we have to formulate a mathematical equation to use as a constraint.
+\subsection{Balance within the micro grid}
+To guarantee the balance in the micro grid as defined in the slides we have to formulate a mathematical equation to use as a constraint.
 We came up with the following equation:\\
 \begin{align} \label{eq1:balance}
 \begin{split}
@@ -7,8 +7,8 @@ We came up with the following equation:\\
 \\ + \sum_{c \in C}({P_{c}(t)} + PposShift_c(t) - PnegShift_c(t)) + \sum\limits_{b \in B}{Pd_{b}(t)}
 \end{split}
 \end{align}
-As one can see, for all timesteps $t$ in the set of all timesteps $T$ the equation has to hold true. 
-This is the constraint for the whole microgrid. 
+As one can see, for all time steps $t$ in the set of all time steps $T$ the equation has to hold true. 
+This is the constraint for the whole micro grid. 
 The left side of the equation represents the power supplied by the supplier ($P_{s}(t)$), the batteries ($P_{b}(t)$) and the import or export from the main grid ($P_{g}(t)$), the right side represents the consumers, which contains homes ($P_{h}(t)$) and commercial buildings ($P_{c}(t)$), the batteries ($Pd_{b}(t)$) while charging. 
 On the right side, there are also the demand shift values for homes and commercial buildings.
 
@@ -20,18 +20,18 @@ If the change in the frequency exceeds a certain threshold suppliers and consume
 
 The supply side of the equation itself is compartmentalized into different factors which are explained in the following.
 
-\textbf{Wind turbines and solar panels:} On the supply side we have the sum which contains the power provided in timestep $t$ by all suppliers of the system (($P_{s}(t)$)), regardless of their type (wind turbines or solar panels).
-We get those values from our model given data for the timestep and weather conditions. 
+\textbf{Wind turbines and solar panels:} On the supply side we have the sum which contains the power provided in time step $t$ by all suppliers of the system ($P_{s}(t)$), regardless of their type (wind turbines or solar panels).
+We get those values from our model given data for the time step and weather conditions. 
 Our software calculates a demand forecast and a supply forecast based on models of the supplier and consumers. 
 Additionally, the location of the installations are provided by the user and a weather forecast is provided by a weather service. 
 For example, for the wind turbines, the Herman Wobus equation is used to calculate the saturated vapor pressure \cite{NOAA}. 
 This equation is based on empirical data and helps us to incorporate the weather forecast in the wind supply forecast. 
 Because all these calculations happen before the optimization step, the solver does not need to know anything about the specifics of the supplier or consumer. As a result of this, we don`t need any constraints for the consumer or suppliers. 
 This supports reuse-ability of the solver and the models for it. 
-The forecast data is provided as an array of data which contains a value for each timestep. 
+The forecast data is provided as an array of data which contains a value for each time step. 
 The values represent the supply or demand and are measured in $Watts$.  %TODO Auf welche Einheit haben wir uns jetzt entschieden?
 
-\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given timestep $t$.  Each battery has a fill level for each timestep. It holds the information how much charge is stored in the battery at each step. This results in the following constraints. Additionally, there is a limit on the charge and the discharge rate. Also there is a limit on the fillLevel, because batteries can not hold an infinite amount of energy.
+\textbf{Battery supply:} The second part is the power provided by the sum of all batteries at a given time step $t$.  Each battery has a fill level for each time step. It holds the information how much charge is stored in the battery at each step. This results in the following constraints. Additionally, there is a limit on the charge and the discharge rate. Also there is a limit on the fillLevel, because batteries can not hold an infinite amount of energy.
 \begin{align} \label{eq:limitDischarge}
 \begin{split}
 \forall b \in B, \forall t \in T: P_{b}(t) < maxDischargeRate_{b}
@@ -51,18 +51,18 @@ The values represent the supply or demand and are measured in $Watts$.  %TODO Au
 
 \textbf{Import and export to the main grid:} The connection to the main grid is resolved in the third part of the supply side of the equation.
 If we have more demand than supply, the solver will either use the energy stored in the batteries or import energy from the main grid. While the demand is satisfied by the suppliers and the battery, no further energy import is necessary. But if the batteries are empty and the demand exceeds the supply more energy has to be imported from the main grid. The import of energy from the main grid costs money. If the supply exceeds the demand it is possible to charge the batteries or to export the energy to the main grid. Exporting energy to the main grid provides revenue.
-\\\newline
+
 For the demand side, we chose a similar approach:
 
-\textbf{Demand from homes and commercial buildings:} The first one is the sum over all homes of a given timestep $t$ with related demand shift of every single home to calculate the total demand of all homes.
-The second one is the sum over all commercial buildings of a given timestep $t$ with related demand shift of every single commercial building to calculate the total demand of all commercial buildings.
+\textbf{Demand from homes and commercial buildings:} The first one is the sum over all homes of a given time step $t$ with related demand shift of every single home to calculate the total demand of all homes.
+The second one is the sum over all commercial buildings of a given time step $t$ with related demand shift of every single commercial building to calculate the total demand of all commercial buildings.
 Comparable to the supply forecast, the demand forecast is generated before the optimization step. 
 It is based on the demand profiles described in \cref{subsec:Demand}. 
 The demand of the homes is provided as an array of constants to the solver and measured in $Watts$. 
 Because the supply and the demand are provided as constants to the optimization component, we did not formulate any constraints for the supplier or the consumers.
 For the demand shift parts of the demand entities, we have a positive shift and a negative shift.
-The negative demand shift tells us how much demand is shifted away on this timestep.
-The positive demand shift tells us the opposite, how much demand is shifted to this timestep.
+The negative demand shift tells us how much demand is shifted away on this time step.
+The positive demand shift tells us the opposite, how much demand is shifted to this time step.
 So the negative demand shift will decrease the demand while the positive demand shift will increase the demand.
 If the negative demand shift of a home or commercial building is greater than 0, the positive demand shift must stay 0 and vice versa. Additionally, overall the demand has to stay the same. 
 This results in the following constraints:
@@ -87,7 +87,7 @@ The constraint  is shown in \Cref{eq:shiftingUpperBound}.
 \end{split}
 \end{align}
 For this constraint n is provided by the user.\\
-There are two possibilities for shifting demand which can be chosen by a user. The first one is used if the user wants to save calculation time or has limited RAM. This variant allows only one shift per supplier. For example, 30\% of the load form 9 o'clock to 10 o'clock or from 15 o'clock to 20 o'clock, but not both. This variant uses the constraint form \Cref{eq:numberOfShifts}. The second variant allows shifting form every hour to every other hour as often as it helps to improve the objective. This results depending on the input and the number of timesteps in a very long run-time and a high RAM consumption.
+There are two possibilities for shifting demand which can be chosen by a user. The first one is used if the user wants to save calculation time or has limited RAM. This variant allows only one shift per supplier. For example, 30\% of the load form 9 o'clock to 10 o'clock or from 15 o'clock to 20 o'clock, but not both. This variant uses the constraint form \Cref{eq:numberOfShifts}. The second variant allows shifting form every hour to every other hour as often as it helps to improve the objective. This results depending on the input and the number of time steps in a very long run-time and a high RAM consumption.
 \begin{align} \label{eq:numberOfShifts}
 \begin{split}
 \forall l \in H\cup C: numberOfShifts_{l} \leq 1
@@ -95,7 +95,7 @@ There are two possibilities for shifting demand which can be chosen by a user. T
 \end{align}
 
 \textbf{Demand of batteries:}
-The third part calculates the demand of all batteries at a given timestep $t$.
+The third part calculates the demand of all batteries at a given time step $t$.
 If we have more supply than demand, the solver can either export the excess energy to the main grid or store it in a battery for later use.
 The storage of energy in the battery results a loss of energy, because charging is not 100\% efficient. The \textit{chargeEfficiency} is provided by the user. These constraints have to be added to our model.
 \begin{align} \label{eq:limitCharge}
@@ -133,28 +133,28 @@ P_{g}(t) < 0 \Rightarrow isEnergyImport(t)\\
 P_{g}(t) > 0 \Rightarrow isEnergyExport(t)
 \end{split}
 \end{align}
-If $isEnergyImport$ is true, the optimizer will use the absolut value of $P_{g}$ for the revenue calculation.
+If $isEnergyImport$ is true, the optimizer will use the absolute value of $P_{g}$ for the revenue calculation.
 In this case, the export will be zero for timestep $t$.
 If $isEnergyExport$ is true, it's the other way round.
 
 
-To maximize the profit in a specified interval of timesteps $t \in T$ between the timesteps $a \in T$ and $b \in T$ we propose the following function:
+To maximize the profit in a specified interval of time steps $t \in T$ between the time steps $a \in T$ and $b \in T$ we propose the following function:
 \begin{equation} \label{eq:opt}
 \max_{p \in P}{(\sum_{t=a}^{b}{((E(t)*price(t))-(I(t)*cost(t)))})}
 \end{equation}
 $P$ is th set of all possible decision configurations.
-$E(t)$ contains the energy export (\textit{isEnergyExport} is true) of timestep $t$ and $I(t)$ (\textit{isEnergyImport} is true) contains the energy import of timestep $t$.
-The value of these variables are depending on the decisions made by the optimizer on the equation for the balance in the microgrid of the exercises before. 
+$E(t)$ contains the energy export (\textit{isEnergyExport} is true) of time step $t$ and $I(t)$ (\textit{isEnergyImport} is true) contains the energy import of time step $t$.
+The value of these variables are depending on the decisions made by the optimizer on the equation for the balance in the micro grid of the exercises before. 
 All configurations from $P$ have to satisfy all the constraints. 
 The formula consists of two main parts. 
-The minuend in the sum calculates the profit for exporting energy to the main grid for this timestep. 
-For this calculation, the total energy export $E(t)$ for this timestep is multiplied by the price for the energy. 
+The minuend in the sum calculates the profit for exporting energy to the main grid for this time step. 
+For this calculation, the total energy export $E(t)$ for this time step is multiplied by the price for the energy. 
 The subtrahend in the sum expresses the cost for importing energy from the main grid. 
-It consists of the total imported energy $I(t)$ multiplied by the cost for importing energy at this timestep. 
+It consists of the total imported energy $I(t)$ multiplied by the cost for importing energy at this time step. 
 There are different possibilities to improve the total profit. 
 For example, one could sell energy at a high price. 
 Another possibility is to store energy if the price for buying is low. 
-For our simulation we use timesteps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in $Wh$ while the unit of the most other values of the previous equations is $Watt$. The price for exporting energy and the cost for importing energy are provided as an array of constants.
+For our simulation we use time steps with the width of one hour, so the values for power and energy are the same, but $E(t)$ and $I(t)$ are measured in $Wh$ while the unit of the most other values of the previous equations is $Watt$. The price for exporting energy and the cost for importing energy are provided as an array of constants.
 This solution maximizes the total profit at all costs. Usually, this means it also minimizes the import from the main grid, because importing energy results in costs. But sometimes it can happen that importing energy at a low price, storing it in batteries and selling it later is the most profitable solution. We chose to optimize for the most profit but sometimes other objectives could be important too. Maybe one wants to go easy on his batteries or wants to be as independent of the main grid as possible. To enable this variant we propose two solutions. The first one computes a pareto front with the two objectives \textit{maximal profit} and \textit{minimal import}. All possible solutions are presented to the user.
 The other way is to prohibit that the battery gets charged if the import from the main grid is not zero. This constraint would realize this $Pg(t) > 0 \Rightarrow Pdb(t) = 0$.
 In this case, the optimizer is only allowed to import energy from the main grid to balance the demand, not to charge the battery.
@@ -168,44 +168,44 @@ Both variants reduce the profit to be more independent from the main grid. We im
 	\begin{longtable}{|c|p{.50\textwidth}|c|}
 		\toprule
 		\textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\ \midrule
-		T & The set of all timesteps. The step width is 1h. & Hour \\ \midrule
+		T & The set of all time steps. The step width is 1h. & Hour \\ \midrule
 		t & A single step from the set T. & Hour \\ \midrule
 		S & The set of all suppliers (Different wind turbines, solar panels...). &  \\ \midrule
 		s & A single supplier from the set S. & \\ \midrule
-		$P_{s}(t)$ & The supply from a single supplier for the specific timestep t. & Watt\\ \midrule
+		$P_{s}(t)$ & The supply from a single supplier for the specific time step t. & Watt\\ \midrule
 		B & The set of all batteries. & \\ \midrule
 		b & A single battery. & \\ \midrule
-		$P_{s}(t)$ & The supply from a single battery for the specific timestep t. & Watt \\ \midrule
-		$P_{g}(t)$ & The supply from the main grid for the specific timestep t. & Watt \\ \midrule
+		$P_{s}(t)$ & The supply from a single battery for the specific time step t. & Watt \\ \midrule
+		$P_{g}(t)$ & The supply from the main grid for the specific time step t. & Watt \\ \midrule
 		H & The set of all homes. & \\ \midrule
 		h & A single home from the set H. & \\ \midrule
-		$P_{h}(t)$ & The demand for a single home at a specific timestep t. & Watt\\ \midrule
+		$P_{h}(t)$ & The demand for a single home at a specific time step t. & Watt\\ \midrule
 		C & The set of all commercial buildings. & \\ \midrule
 		c & A single commercial building from the set C. & \\ \midrule
-		$P_{c}(t)$ & The demand for a single commercial building at a specific timestep t. & Watt \\ \midrule
-		$P_{b}(t)$ & The supply from a single battery at a specific timestep t. & Watt \\ \midrule
-		$Pd_{b}(t)$ & The demand from a single battery at a specific timestep t. & Watt \\ \midrule
-		$PposShift_{h}(t)$ \& $PposShift_{c}(t)$ & The demand flexibility (in positive direction) for the consumer at specific timestep t. & Watt \\ \midrule
-		$PnegShift_{h}(t)$ \& $PnegShift_{c}(t)$ & The demand flexibility (in negative direction) for the consumer at specific timestep t. & Watt \\ \midrule
+		$P_{c}(t)$ & The demand for a single commercial building at a specific time step t. & Watt \\ \midrule
+		$P_{b}(t)$ & The supply from a single battery at a specific time step t. & Watt \\ \midrule
+		$Pd_{b}(t)$ & The demand from a single battery at a specific time step t. & Watt \\ \midrule
+		$PposShift_{h}(t)$ \& $PposShift_{c}(t)$ & The demand flexibility (in positive direction) for the consumer at specific time step t. & Watt \\ \midrule
+		$PnegShift_{h}(t)$ \& $PnegShift_{c}(t)$ & The demand flexibility (in negative direction) for the consumer at specific time step t. & Watt \\ \midrule
 		$maxDischargeRate_{b}$ & The maximal rate at which it is possible to discharge the battery b. & Watt \\ \midrule
-		$fillLevel{b}(t)$ & Represents the amount of energy stored in battery b at the timestep t. & Wh \\ \midrule
+		$fillLevel{b}(t)$ & Represents the amount of energy stored in battery b at the time step t. & $Wh$ \\ \midrule
 		$l$ & A single consumer from the set $H\cup C$. & \\ \midrule
-		$P_{l}(t)$ & The energy demand from a single consumer from the set $H\cup C$ at a specific timestep t. & Watt \\ \midrule
+		$P_{l}(t)$ & The energy demand from a single consumer from the set $H\cup C$ at a specific time step t. & Watt \\ \midrule
 		$n_{l}$ & A user defined number which defines how much percent of the demand of the consumer l can be shifted. & 1 \\ \midrule
 		$numberOfShifts_{l}$ & The number of occurred shifts for one consumer l. & 1 \\ \midrule
 		$maxChargeRate_{b}$ & The maximal rate at which it is possible to discharge the battery b. & Watt \\ \midrule
 		$maxFillLevel_{b}$ & The maximal charge the battery b is able to store. & Wh\\ \midrule
 		$chargeEfficiency_{b}$ & The user defined efficiency for charging the battery b. & 1 \\ \midrule
-		$isEnergyImport(t)$ & Boolean variable which is true if energy is imported  at a specific timestep t.&  \\ \midrule
-		$isEnergyExport(t)$ & Boolean variable which is true if energy is exported  at a specific timestep t.&  \\ \midrule
+		$isEnergyImport(t)$ & Boolean variable which is true if energy is imported  at a specific time step t.&  \\ \midrule
+		$isEnergyExport(t)$ & Boolean variable which is true if energy is exported  at a specific time step t.&  \\ \midrule
 		P & The set of all possible configurations. &  \\ \midrule
 		p & A single configuration. &  \\ \midrule
-		a & A single step form the set T. It marks the first timestep of the optimization. & Hour \\ \midrule
-		b & A single step form the set T. It marks the last timestep of the optimization. & Hour \\ \midrule
-		E(t) & The total energy exported to the main grid for a specific timestep t. & Wh \\ \midrule
-		I(t) & The total energy imported from the main grid for a specific timestep t. & Wh  \\ \midrule
-		price(t) & The function provides the price for energy per Wh which is sold to the main grid for a specific timestep t. & Cent per Wh \\ \midrule
-		cost(t) & The function provides the cost for energy per Wh which is imported from the main grid for a specific timestep t. & Cent per W \\
+		a & A single step form the set T. It marks the first time step of the optimization. & Hour \\ \midrule
+		b & A single step form the set T. It marks the last time step of the optimization. & Hour \\ \midrule
+		E(t) & The total energy exported to the main grid for a specific time step t. & $Wh$ \\ \midrule
+		I(t) & The total energy imported from the main grid for a specific time step t. & $Wh$  \\ \midrule
+		price(t) & The function provides the price for energy per $Wh$ which is sold to the main grid for a specific time step t. & Cent per $Wh$ \\ \midrule
+		cost(t) & The function provides the cost for energy per $Wh$ which is imported from the main grid for a specific time step t. & Cent per $W$ \\
 		\bottomrule
 			\caption[Nomenclature Table]{Describes every Symbol}
 		\label{tab:Ergebnisse}

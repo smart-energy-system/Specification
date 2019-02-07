@@ -13,14 +13,16 @@ To be able to now compute the actual vapor pressure at a given temperature we st
 $E = e/p^{8}$ with\\
 e = 6.1078 and\\
 $p = c_0 + T * (c_1 + T * (c_2 + T * (c_3 + T * (c_4 + T *(c_5 + T * (c_6 + T * (c_7 + T * c_8 + T * c_9)))))))$\\
-with $c_0$ to $c_9$ being constants and T being the temperature in degrees Celsius.\cite{AirDensity,NOAA}
+with $c_0$ to $c_9$ being constants and T being the temperature in degrees Celsius\cite{AirDensity,NOAA}.
 \subsubsection{Density of moist air}
-In order to compute the density of moist air, we have to have a look at how it is compounded. Moist air density is a mixture of dry air and water vapor. The physical equation for this is: $D_m = (P_d/(R_d * T_k))+(P_v/(R_v*T_k))$\\
-$D_m$ is the density of moist air, $P_d$ is the pressure of dry air at the specified temperature, $R_d$ is the gas constant for dry air, $P_v$ is the pressure of water vapor at the specified temperature, $R_v$ is the gas constant for water vapor and $T_k$ is the given temperature in degrees Kelvin. With the previously implemented methods this equation system is able to compute the air density with only the temperature and relative humidity given.\cite{AirDensity,Shelquist}
+In order to compute the density of moist air, we have to have a look at how it is compounded. Moist air density is a mixture of dry air and water vapor. The physical equation for this is: $D_m = (P_d/(R_d * T_k))+(P_v/(R_v*T_k))$.
+
+$D_m$ is the density of moist air, $P_d$ is the pressure of dry air at the specified temperature, $R_d$ is the gas constant for dry air, $P_v$ is the pressure of water vapor at the specified temperature, $R_v$ is the gas constant for water vapor and $T_k$ is the given temperature in degrees Kelvin. With the previously implemented methods this equation system is able to compute the air density with only the temperature and relative humidity given\cite{AirDensity,Shelquist}.
 \subsubsection{Wind turbine model}
 The wind turbine model contains some variables which can be set by the user. The function for computing the generated energy is derived from the power coefficient of the turbine (basically the efficiency), the size of the turbine (shows in area swept), the density of the air in the area and of course the weather conditions which apply at the moment given.
 The general equation for this setup is: $P_{avail} = (1/2) * p * A * v^{3} * C$
-where p is the air pressure, A the area swept, v the windspeed and C the power coefficient. \cite{WindPowerCalcs}
+where p is the air pressure, A the area swept, v the windspeed and C the power coefficient \cite{WindPowerCalcs}.
+
 \subsection{Photovoltaic}
 \subsubsection{Temperature loss}
 The function for the temperature loss is giving a linear function for the percentage loss of energy depending on the degrees over 25 degree Celsius. We made the assumption that the efficiency does not go over 100 \% even for temperatures below 25 degree Celsius.The resulting equation is as follows: $L_t = max((T-25)*0.005 , 0)$ with the result being the percentage of energy lost due to temperature as a point number.
@@ -31,15 +33,17 @@ With the previous computed losses for temperature and the constant loss $L_0$ of
 The computation of the solar radiation incident and therefore the effective solar radiation on the surface of the solar panel can be computed with the equation $(SP_{horizontal} * sin(\alpha + \beta))/sin(\alpha)$.
 $\alpha$ is the effective tilt of solar radiation on a specified latitude and set as $90 - latitude$ of the position from the solar panel + $\delta$.
 $\delta$ is the tilt of the solar radiation in regard of the day of the year d and can be computed with the following equation: $23.45 * sin((360/365) * (284 + d))$. $(SP_{horizontal}$ is the horizontal solar radiation. Our weather service provides us with this information.
-The tilt of the solar panel  itself is used as $\beta$. \cite{SolarRadiation}
+The tilt of the solar panel  itself is used as $\beta$ \cite{SolarRadiation}.
+
 \subsubsection{Photovoltaic model}
-The formula for computing the generated energy as given in the slides is: $E = A * r * PR * S$\\
-A is the area of the solar panel and is given by the user in $m^{2}$.
-Same goes for the solar panel yield r which is given by the user via the maximum power yield as well.
-The performance ratio PR  is computed in on of the previous steps and is  a percentage.
+The formula for computing the generated energy as given in the slides is: $E = A * r * PR * S$
+
+$A$ is the area of the solar panel and is given by the user in $m^{2}$.
+Same goes for the solar panel yield $r$ which is given by the user via the maximum power yield as well.
+The performance ratio $PR$  is computed in on of the previous steps and is  a percentage.
 S is the solar radiation incident and is computed in regards of solar radiation and other factors taken from the database.
 The measurement unit for S is $W/m^{2}$.
-The resulting unit for produced energy is therefore W.
+The resulting unit for produced energy is therefore $W$.
 \subsubsection{Battery model}
 The first function for returning the current state of the battery is a simple return of the currently stored energy.
 The formula for charging and discharging is more complex and takes several parameters.
