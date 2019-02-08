@@ -1,9 +1,9 @@
-The power girds of the future will be different from the existing ones. More information will be used to make better decisions, more renewable energy sources will be integrated and more automation will happen.
-Also, micro grids will be a part of the energy concepts of the future.
-The simulation system presented in this report could help to gain a better understanding about different aspects of micro girds. 
-The first section provides a motivation and introduction to micro girds. 
+The power grids of the future will be different from the existing ones. More information will be used to make better decisions, more renewable energy sources will be integrated and more automation will happen.
+Also, micro-grids will be a part of the energy concepts of the future.
+The simulation system presented in this report could help to gain a better understanding of different aspects of micro-girds. 
+The first section provides motivation and an introduction to micro girds. 
 The next section contains basic information which are necessary to understand the problem, the functional requirements and an architecture description.
-The architecture is split in three layers. 
+The architecture is split into three layers. 
 The web frontend, the logic layer which contains the simulation and the database layer.
 It also features a reliable approach to integrate an external weather component.
 In addition to this, there is a service to collect day-ahead energy prices to optimize the smart grid in regard to minimal energy costs. 
@@ -11,38 +11,38 @@ In addition to this, there is a service to collect day-ahead energy prices to op
 \Cref{sec:DemandResponse} provides a description of the optimization problem which has to be solved in order to find the best solution possible for the micro grid. 
 This solution describes when it is profitable to charge batteries, when to shift the demand.
 The dynamic pricing is described in \cref{sec:DynamicPricing }.
-In \cref{sec:frontend} we described the user frontend, especially which kinds of charts we supply to show a user in a compact manner all information he needs to analyse his smart grid.
+In \cref{sec:frontend} we described the user frontend. This section focuses especially on which kinds of charts we supply to a user in order to show the user all information in a compact manner. 
 
-To summarize we built a smart energy system to simulate smart grids.
+To summarize this, we built a smart energy system to simulate smart grids.
 The system is built modular to allow easy extendability with new features, e.g. a new kind of supplier.
-Using real weather data for specific locations the system can compute the energy produced by the supplier.
-Using this data and simulating consumer and batteries, in addition to energy prices for DE-LU bidding zone, the system can solve a optimization problem to balance out supply and consume regarding to minimize energy costs.
-The data is shown to the user in a compact dashboard in an angular app component, where he can also create supplier, consumer and batteries.
+Using real weather data for specific locations the system can compute the energy produced by the suppliers.
+Using this data and simulating consumer and batteries, in addition to energy prices for a preconfigured bidding zone, the system can solve an optimization problem to balance out supply and consume regarding to minimize energy costs.
+The data is shown to the user in a compact dashboard in an Angular based application component, where he can also create supplier, consumer and batteries.
 
-In our implementations we used for the frontend Angular with Typescript, Angular Material, Charts.js, Moments.js and C3.
+In our implementations, we used for the frontend Angular with Typescript, Angular Material, Charts.js, Moments.js and C3.js.
 The WeatherCollectorService is written in NodeJS express with ECMAScript 6 features.
-The main component and the PriceCollectorService are written in Java SpringBoot.
-All components are written modulary to support a good expandability. 
+The main component and the PriceCollectorService are written in Java Spring Boot\footnote{\url{https://spring.io/projects/spring-boot}}.
+All components are written with modularity in mind to support expandability. To support reusability of the different components we decided to use REST for communication among them.
 
 \subsection{Outlook}
-The system supports at the current state only wind turbines and photovoltaic pannels as supplier and on the consumer side normal houses and commercial buildings.
-Due to the modularity of the system would is possible to add additional kinds of supplier or consumer to the system in the future.
+Our system supports at the moment only wind turbines and photovoltaic panels as supplier normal houses and commercial buildings as consumers.
+Due to the modularity of the system it would is possible to add additional kinds of supplier or consumer to the system in the future.
 
-A big problem is the small computation power of the used choco solver.
-We can only solve the balancing problem for one entity of each supplier, consumer and one battery in a time interval of 4 hours.
-Using more data ends up in computing to long or a stack overflow in the solver.
-To ease problem a bit, we concatenate supplier and consumer before giving the data to the solver.
-A good improvement for the system would be to implement a stronger optimization solver, possibly in another programming language and invoke it from the main component to compute with more data.
-Since the rest of our system already supports multiple entities of supplier, consumer and batteries this change could be easily made, assuming a stronger solver exists.
+A big problem is the long run times and the huge memory consumption of the used choco solver if we use extend ranges or calculate more steps.
+We can only solve the balancing problem for one entity of each supplier, consumer and one battery in a time interval of 4 hours in a fast manner.
+Using more data ends up in long computation times or in a stack overflow to to memory shortage in the solver.
+To ease the problem a bit, we concatenate supplier and consumer before giving the data to the solver.
+A good improvement for the system would be to implement a stronger optimization solver, possibly in another programming language and invoke it from the main component to compute with more data. Also, a distributed solver could be feasible to support more data. 
+Since the rest of our system already supports multiple instances of suppliers, consumers and batteries this change could be easily made, assuming a better solution for solving the optimization problem exists.
 
-A user can create entities using the Opensteetmap component from Angular.
+A user can create entities using the Opensteetmap component in our user interface.
 It's possible to add them everywhere in the world.
-But simulating a smart grid e.g. in China with German bidding zone for energy prices would not make much sense.
-To support the locations all around the world better, it is necessary to add more price data provider and to add the possibility to configure the bidding zone at runtime.
+But simulating a smart grid e.g. in China with German bidding zone date for energy prices would be meaningless.
+To support locations all around the world better, it is necessary to add more price data providers and to add the possibility to configure the bidding zone at runtime.
 Therefore the system should be changed to collect dynamically energy prices for any bidding zone in the world, regarding the location of the consumer.
 
-Showing the supplier, consumer and batteries in the map would make it possible also do add some connectors between to simulate e.g. power cables. Or to add more variance in the demand profile based on the location.
+Showing the supplier, consumer and batteries in an overview map would make it possible also to add some connectors between them e.g. power cables. This could introduce more realism to the simulation. Or based on the location data of the consumers more variance in the demand profile could be added.
 
-There are several possibilities to improve our smart energy system in a future work.
-We published the project on GitHub under MIT licence to allow developers to extend the system, e.g. with pull requests.
-In our opinion the choco solver is the biggest problem of the current system and should be replaced first before adding additional features.
+There are several possibilities to improve our smart energy system in future work.
+We published the project on GitHub under MIT license to allow developers to extend the system, e.g. with pull requests.
+In our opinion, the long run times of the choco solver are the biggest problems of the current system and should be replaced first before adding additional features.
