@@ -1,7 +1,8 @@
 \section{Frontend}\label{sec:frontend}
 The following section describes our user frontend and especially how we show data to the user in a compact manner.
-The frontend is written in Angular with Typescript using Angular Material, Chart.js, Moments.js and C3 libraries.
-We devided the frontend in 5 parts.
+The frontend is written in Angular with Typescript using Angular Material, Chart.js, Moments.js and C3 libraries. 
+Angular Material is used to get a consistent look for all view and Moments.js provides us with better time and date handling capabilities. Chart.js features beautiful line charts and C3 is used to display the bar chart for our price overview.  
+We divided the frontend in 5 parts.
 The user can choose in a navigation bar between \textit{Dashboard},
 \textit{Solver}, \textit{Supplier}, \textit{Consumer}, \textit{Batteries} and \textit{Prices} view.
 The views are described in the following subsections.
@@ -22,7 +23,7 @@ In the left side there is a navigation bar which shows all created supplier.
 A user can add a new one using the \textit{plus} button under the suppliers, delete a specific supplier using the \textit{bin} button right to the supplier or manage the supplier clicking on it.
 The main part of this page is the form with the user given data such as latitude, longitude or additional supplier specific needed data, e.g. rotator radius for wind turbines.
 The kind of supplier can be chosen with the radio button above the form.
-Due to angulars modularity it's easy to add more kinds of supplier in the future.
+Due to Angulars modularity it's easy to add more kinds of supplier in the future.
 Next to the form is a map using angular leaflet openstreetmap API.
 The nice part is that a user does not need to know the specific latitude or longitude to create supplier.
 Clicking on the map adds a location point which can be exported easily to the form which allows the user to create suppliers at a specific place in the map.
@@ -95,10 +96,22 @@ In addition to this, we can show the user 5 days history or forecast.
 
 For kind of charts we chose to support stacked charts and normal charts.
 In stacked charts the values can be stacked above each others.
-In  \cref{fig:supplierChart} a stacked chart is used, where the supply of the supplier \textit{Office} added above the supplier \textit{Home}.
+In  \cref{fig:supplierChart} a stacked chart is used, where the supply of the supplier \textit{Wind Turbine 1} added above the supplier \textit{Panel 1}.
 \Cref{fig:dashboard} shows a normal chart.
 
 \subsection{Solver}\label{sec:solver}
+\begin{figure}[!h]
+    \centering
+\includegraphics[width=1.00\textwidth]{../figures/SolverSettings.png}
+    \caption{This view is used to configure the solver}
+    \label{fig:solverSettings}
+\end{figure}
+Our system is made to allow a use the simulate a micro grid for for a period of time. 
+The user should be able to configure a simulation and than post it to the system. 
+After the simulation is complete the results are shown to the user. 
+\Cref{fig:solverSettings} shows the configuration page for a simulation. 
+The user has to enter the start and end time. For the simulation part more information is necessary. The user has to specify the price which for which energy can be sold to the main grid.
+
 In the solver view the user can see the steps of the solver in three possible ways.
 The first way is to show the steps in a chart.
 There is also the possibility to show a textual description of the steps.
